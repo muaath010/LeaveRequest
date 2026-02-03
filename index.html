@@ -7,17 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #fffaf0; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #fffaf0; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3); }
         .red-gradient { background: linear-gradient(135deg, #800000 0%, #b91c1c 100%); }
         .hidden { display: none; }
+        @media (max-width: 640px) { .hide-on-mobile { display: none; } }
     </style>
 </head>
 <body class="text-gray-800">
 
     <nav class="bg-red-900 text-white p-4 shadow-xl border-b-4 border-yellow-500 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-lg font-bold">⭐ مدرسة محمد بن سليمان الغافري</h1>
+            <h1 class="text-lg md:text-xl font-bold">⭐ مدرسة محمد بن سليمان الغافري</h1>
             <div class="flex gap-2">
                 <button onclick="showSection('user-form')" class="px-3 py-1 hover:bg-red-800 rounded-lg text-sm transition">تقديم طلب</button>
                 <button onclick="showAdminLogin()" class="px-3 py-1 bg-yellow-500 text-red-900 font-bold hover:bg-yellow-400 rounded-lg text-sm shadow-md transition">المدير</button>
@@ -28,15 +29,15 @@
     <div class="container mx-auto mt-6 px-4 pb-12">
         
         <section id="user-form" class="section-content">
-            <div class="max-w-3xl mx-auto glass p-6 rounded-2xl shadow-2xl border-t-8 border-red-900">
+            <div class="max-w-3xl mx-auto glass p-6 md:p-10 rounded-2xl shadow-2xl border-t-8 border-red-900">
                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-red-900">نموذج إستئذان إلكتروني</h2>
+                    <h2 class="text-2xl md:text-3xl font-bold text-red-900">نموذج إستئذان إلكتروني</h2>
                     <p class="text-yellow-700 font-bold mt-2">رقم الطلب: <span id="perm-id" class="font-mono text-red-600">---</span></p>
                 </div>
 
-                <div class="space-y-4">
+                <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input type="text" id="emp-id" placeholder="رقم الموظف" class="p-3 border-2 border-red-50 rounded-xl outline-none focus:border-yellow-500">
+                        <input type="text" id="emp-id" placeholder="رقم الموظف" class="p-3 border-2 border-red-50 rounded-xl focus:border-yellow-500 outline-none">
                         <input type="date" id="req-date" class="p-3 border-2 border-red-50 rounded-xl outline-none">
                     </div>
 
@@ -50,47 +51,52 @@
                         <div id="time-inputs" class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-red-800 mb-1">من الساعة:</label>
-                                <input type="time" id="time-from" class="w-full p-2 border border-yellow-300 rounded-lg">
+                                <input type="time" id="time-from" class="w-full p-2 border border-yellow-300 rounded-lg outline-none">
                             </div>
                             <div id="div-to">
                                 <label class="block text-xs font-bold text-red-800 mb-1">إلى الساعة:</label>
-                                <input type="time" id="time-to" class="w-full p-2 border border-yellow-300 rounded-lg">
+                                <input type="time" id="time-to" class="w-full p-2 border border-yellow-300 rounded-lg outline-none">
                             </div>
                         </div>
                     </div>
 
-                    <textarea id="reason" rows="3" class="w-full p-3 border-2 border-red-50 rounded-xl outline-none" placeholder="سبب الاستئذان..."></textarea>
+                    <textarea id="reason" rows="3" class="w-full p-3 border-2 border-red-50 rounded-xl outline-none focus:border-yellow-500" placeholder="اذكر سبب الاستئذان هنا..."></textarea>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <input type="text" id="emp-name" placeholder="اسم الموظف" class="p-2 border rounded-lg">
-                        <input type="text" id="emp-job" placeholder="الوظيفة" class="p-2 border rounded-lg">
-                        <input type="text" id="emp-file" placeholder="رقم الملف" class="p-2 border rounded-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pb-4">
+                        <input type="text" id="emp-name" placeholder="اسم الموظف" class="p-2 border rounded-lg outline-none">
+                        <input type="text" id="emp-job" placeholder="الوظيفة" class="p-2 border rounded-lg outline-none">
+                        <input type="text" id="emp-file" placeholder="رقم الملف" class="p-2 border rounded-lg outline-none">
                     </div>
 
-                    <button id="btn-submit" onclick="submitRequest()" class="w-full red-gradient text-white py-4 rounded-xl font-bold text-xl active:scale-95 transition">إرسال الطلب ✅</button>
+                    <button id="btn-submit" onclick="submitRequest()" class="w-full red-gradient text-white py-4 rounded-xl font-bold text-xl shadow-lg active:scale-95 transition">إرسال الطلب للاعتماد ✅</button>
                 </div>
             </div>
         </section>
 
         <section id="admin-login" class="section-content hidden">
-            <div class="max-w-md mx-auto glass p-10 rounded-2xl shadow-2xl mt-10 text-center">
-                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-3 border rounded-lg mb-4 text-center">
-                <button onclick="loginAdmin()" class="w-full red-gradient text-white py-3 rounded-lg font-bold">دخول</button>
+            <div class="max-w-md mx-auto glass p-10 rounded-2xl shadow-2xl mt-10 text-center border-b-8 border-yellow-500">
+                <h2 class="text-2xl font-bold text-red-900 mb-6">دخول الإدارة المدرسية</h2>
+                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-3 border-2 rounded-lg mb-4 text-center text-xl outline-none focus:border-yellow-500">
+                <button onclick="loginAdmin()" class="w-full red-gradient text-white py-3 rounded-lg font-bold">دخول النظام</button>
             </div>
         </section>
 
         <section id="admin-dashboard" class="section-content hidden">
             <div class="glass p-6 rounded-2xl shadow-2xl border-t-8 border-red-900">
-                <h2 class="text-xl font-bold text-red-900 mb-6">سجل طلبات المدرسة</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right">
+                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                    <h2 class="text-xl font-bold text-red-900 underline decoration-yellow-500">سجل طلبات الاستئذان</h2>
+                    <button onclick="showSection('user-form')" class="text-red-600 font-bold border-2 border-red-600 px-4 py-1 rounded-full hover:bg-red-600 hover:text-white transition">خروج</button>
+                </div>
+                
+                <div class="overflow-x-auto rounded-xl">
+                    <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-red-900 text-yellow-400 text-sm">
-                                <th class="p-3">الموظف</th>
-                                <th class="p-3">السبب</th>
-                                <th class="p-3 text-center">التوقيت</th>
-                                <th class="p-3 text-center">الحالة</th>
-                                <th class="p-3 text-center">الإجراء</th>
+                            <tr class="bg-red-900 text-yellow-400">
+                                <th class="p-4 text-xs font-bold">الموظف</th>
+                                <th class="p-4 text-xs font-bold hide-on-mobile">السبب</th>
+                                <th class="p-4 text-xs text-center font-bold">التوقيت</th>
+                                <th class="p-4 text-xs text-center font-bold">الحالة</th>
+                                <th class="p-4 text-xs text-center font-bold">الإجراء</th>
                             </tr>
                         </thead>
                         <tbody id="requests-table-body" class="bg-white"></tbody>
@@ -100,33 +106,37 @@
         </section>
     </div>
 
-    <div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white p-6 rounded-2xl max-w-lg w-full">
-            <h3 class="text-xl font-bold text-red-900 mb-4">اتخاذ قرار</h3>
-            <div id="modal-details" class="mb-4 text-sm bg-red-50 p-4 rounded-lg"></div>
-            <textarea id="admin-comment" class="w-full p-2 border rounded-lg mb-4 text-right" placeholder="ملاحظات المدير..."></textarea>
-            <div class="flex gap-2 font-bold">
-                <button onclick="updateStatus('approved')" class="flex-1 bg-green-600 text-white py-2 rounded-lg">موافقة</button>
-                <button onclick="updateStatus('rejected')" class="flex-1 bg-red-600 text-white py-2 rounded-lg">رفض</button>
-                <button onclick="closeModal()" class="flex-1 bg-gray-400 text-white py-2 rounded-lg">إلغاء</button>
+    <div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-[100] backdrop-blur-sm">
+        <div class="bg-white p-8 rounded-2xl max-w-lg w-full shadow-2xl border-t-8 border-yellow-500">
+            <h3 class="text-2xl font-bold text-red-900 mb-4 text-right">اتخاذ قرار إداري</h3>
+            <div id="modal-details" class="mb-5 text-sm bg-red-50 p-5 rounded-xl border border-red-100 text-right leading-relaxed"></div>
+            <textarea id="admin-comment" class="w-full p-3 border-2 rounded-xl mb-5 text-right outline-none focus:border-yellow-500" placeholder="إضافة ملاحظات المدير..."></textarea>
+            <div class="flex gap-3">
+                <button onclick="updateStatus('approved')" class="flex-1 bg-green-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-green-700 transition">موافقة</button>
+                <button onclick="updateStatus('rejected')" class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-red-700 transition">رفض</button>
+                <button onclick="closeModal()" class="flex-1 bg-gray-400 text-white py-3 rounded-xl font-bold hover:bg-gray-500 transition">إلغاء</button>
             </div>
         </div>
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzubliIKgA1co_DGcLkkH1xa1M8v6M7g_DnRv62e3xGZuKvWeE59t2x7wTkoKMOf6T2/exec";
-        
-        // دالة لتصحيح شكل الوقت القادم من جوجل شيت
-        function formatTime(timeStr) {
+        let currentRequestId = null;
+
+        // دالة تنظيف الوقت من الصيغة الطويلة (1899-12-30T...)
+        function formatTimeClean(timeStr) {
             if (!timeStr) return "--:--";
-            // إذا كان الوقت قادم كأجزاء من اليوم (مثل 0.333) نقوم بتحويله
-            if (!isNaN(timeStr) && timeStr !== "") {
-                let totalMinutes = Math.round(timeStr * 24 * 60);
+            let s = String(timeStr);
+            if (s.includes('T')) {
+                return s.split('T')[1].substring(0, 5);
+            }
+            if (!isNaN(s) && s !== "") {
+                let totalMinutes = Math.round(Number(s) * 24 * 60);
                 let hours = Math.floor(totalMinutes / 60);
                 let minutes = totalMinutes % 60;
                 return (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
             }
-            return timeStr;
+            return s;
         }
 
         function showSection(id) {
@@ -135,11 +145,12 @@
         }
 
         function showAdminLogin() { showSection('admin-login'); }
+
         function loginAdmin() {
             if(document.getElementById('admin-pass').value === 'oman26') {
                 showSection('admin-dashboard');
                 loadRequests();
-            } else { alert('خطأ'); }
+            } else { alert('كلمة المرور غير صحيحة!'); }
         }
 
         function toggleTimeFields() {
@@ -163,15 +174,22 @@
                 empFile: document.getElementById('emp-file').value,
                 status: 'pending'
             };
+
+            if(!data.empName || !data.empId) return alert('يرجى تعبئة البيانات الأساسية');
             btn.disabled = true;
-            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert('تم الإرسال ✅');
-            location.reload();
+            btn.innerText = "جاري الحفظ في السحابة... ⏳";
+
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+                alert('تم إرسال الطلب بنجاح ✅');
+                location.reload();
+            } catch (e) { alert('خطأ في الشبكة'); btn.disabled = false; }
         }
 
         async function loadRequests() {
             const tbody = document.getElementById('requests-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">جاري التحميل...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center font-bold text-red-900 animate-pulse">جاري جلب السجلات...</td></tr>';
+
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
@@ -181,38 +199,38 @@
                     const statusText = r[6] === 'approved' ? 'مقبول' : (r[6] === 'rejected' ? 'مرفوض' : 'انتظار');
                     const statusColor = r[6] === 'approved' ? 'text-green-600' : (r[6] === 'rejected' ? 'text-red-600' : 'text-orange-500');
                     
-                    // r[10] هو الوقت من، r[11] هو الوقت إلى، r[5] هو السبب
-                    const timeFrom = formatTime(r[10]);
-                    const timeTo = formatTime(r[11]);
-                    const reason = r[5] || "لا يوجد سبب";
+                    const timeFrom = formatTimeClean(r[10]);
+                    const timeTo = formatTimeClean(r[11]);
+                    const reason = r[5] || "لم يذكر سبب";
                     const timing = (r[11] && r[11] !== "") ? `${timeFrom} - ${timeTo}` : timeFrom;
 
                     tbody.innerHTML += `
-                        <tr class="border-b hover:bg-red-50 text-sm">
-                            <td class="p-3 font-bold">${r[2]}</td>
-                            <td class="p-3 text-gray-600 truncate max-w-[150px]">${reason}</td>
-                            <td class="p-3 text-center font-bold text-blue-800">${timing}</td>
-                            <td class="p-3 text-center font-bold ${statusColor}">${statusText}</td>
-                            <td class="p-3 text-center">
-                                <button onclick="openApprovalModal('${r[0]}', '${r[2]}', '${reason}')" class="bg-red-800 text-white px-3 py-1 rounded text-xs">قرار</button>
+                        <tr class="border-b hover:bg-red-50 transition text-sm">
+                            <td class="p-4 font-bold text-red-900">${r[2]}</td>
+                            <td class="p-4 text-gray-600 truncate max-w-[150px] hide-on-mobile">${reason}</td>
+                            <td class="p-4 text-center font-bold text-blue-800">${timing}</td>
+                            <td class="p-4 text-center font-extrabold ${statusColor}">${statusText}</td>
+                            <td class="p-4 text-center">
+                                <button onclick="openApprovalModal('${r[0]}', '${r[2]}', '${reason}')" class="bg-red-800 text-white px-4 py-1 rounded-full text-xs shadow-md">عرض</button>
                             </td>
                         </tr>`;
                 });
-            } catch (e) { tbody.innerHTML = '<tr><td colspan="5">فشل التحميل</td></tr>'; }
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">فشل التحميل</td></tr>'; }
         }
 
         function openApprovalModal(id, name, reason) {
             currentRequestId = id;
-            document.getElementById('modal-details').innerHTML = `الموظف: ${name} <br> السبب: ${reason}`;
+            document.getElementById('modal-details').innerHTML = `<strong>الموظف:</strong> ${name} <br> <strong>السبب المذكور:</strong> ${reason}`;
             document.getElementById('approval-modal').classList.remove('hidden');
         }
 
         function closeModal() { document.getElementById('approval-modal').classList.add('hidden'); }
 
         async function updateStatus(status) {
-            const data = { action: "update", id: currentRequestId, status: status, comment: document.getElementById('admin-comment').value };
+            const comment = document.getElementById('admin-comment').value;
+            const data = { action: "update", id: currentRequestId, status: status, comment: comment };
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-            alert('تم التحديث ✅');
+            alert('تم تحديث القرار ✅');
             closeModal();
             loadRequests();
         }
