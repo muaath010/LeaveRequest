@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الاستئذان المطور | مدرسة الغافري</title>
+    <title>نظام الاستئذان المعتمد | مدرسة الغافري</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -49,7 +49,7 @@
 
                         <div id="time-inputs" class="grid grid-cols-2 gap-4">
                             <div>
-                                <label id="label-from" class="block text-xs font-bold text-red-800 mb-1">من الساعة:</label>
+                                <label class="block text-xs font-bold text-red-800 mb-1">من الساعة:</label>
                                 <input type="time" id="time-from" class="w-full p-2 border border-yellow-300 rounded-lg">
                             </div>
                             <div id="div-to">
@@ -59,7 +59,7 @@
                         </div>
                     </div>
 
-                    <textarea id="reason" rows="3" class="w-full p-3 border-2 border-red-50 rounded-xl outline-none" placeholder="السبب..."></textarea>
+                    <textarea id="reason" rows="3" class="w-full p-3 border-2 border-red-50 rounded-xl outline-none" placeholder="سبب الاستئذان..."></textarea>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <input type="text" id="emp-name" placeholder="اسم الموظف" class="p-2 border rounded-lg">
@@ -74,24 +74,20 @@
 
         <section id="admin-login" class="section-content hidden">
             <div class="max-w-md mx-auto glass p-10 rounded-2xl shadow-2xl mt-10 text-center">
-                <h2 class="text-2xl font-bold text-red-900 mb-6">دخول الإدارة</h2>
-                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-3 border rounded-lg mb-4 text-center text-xl">
+                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-3 border rounded-lg mb-4 text-center">
                 <button onclick="loginAdmin()" class="w-full red-gradient text-white py-3 rounded-lg font-bold">دخول</button>
             </div>
         </section>
 
         <section id="admin-dashboard" class="section-content hidden">
             <div class="glass p-6 rounded-2xl shadow-2xl border-t-8 border-red-900">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-red-900">سجل الطلبات</h2>
-                    <button onclick="showSection('user-form')" class="text-red-600 font-bold border-2 border-red-600 px-4 py-1 rounded-full">خروج</button>
-                </div>
+                <h2 class="text-xl font-bold text-red-900 mb-6">سجل طلبات المدرسة</h2>
                 <div class="overflow-x-auto">
                     <table class="w-full text-right">
                         <thead>
-                            <tr class="bg-red-900 text-yellow-400 font-bold text-sm">
-                                <th class="p-3">رقم الطلب</th>
+                            <tr class="bg-red-900 text-yellow-400 text-sm">
                                 <th class="p-3">الموظف</th>
+                                <th class="p-3">السبب</th>
                                 <th class="p-3 text-center">التوقيت</th>
                                 <th class="p-3 text-center">الحالة</th>
                                 <th class="p-3 text-center">الإجراء</th>
@@ -105,26 +101,33 @@
     </div>
 
     <div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-[100]">
-        <div class="bg-white p-6 rounded-2xl max-w-lg w-full shadow-2xl">
+        <div class="bg-white p-6 rounded-2xl max-w-lg w-full">
             <h3 class="text-xl font-bold text-red-900 mb-4">اتخاذ قرار</h3>
-            <div id="modal-details" class="mb-4 text-sm bg-red-50 p-4 rounded-lg text-right"></div>
+            <div id="modal-details" class="mb-4 text-sm bg-red-50 p-4 rounded-lg"></div>
             <textarea id="admin-comment" class="w-full p-2 border rounded-lg mb-4 text-right" placeholder="ملاحظات المدير..."></textarea>
             <div class="flex gap-2 font-bold">
                 <button onclick="updateStatus('approved')" class="flex-1 bg-green-600 text-white py-2 rounded-lg">موافقة</button>
                 <button onclick="updateStatus('rejected')" class="flex-1 bg-red-600 text-white py-2 rounded-lg">رفض</button>
-                <button onclick="closeModal()" class="flex-1 bg-gray-400 text-white py-2 rounded-lg font-normal">إلغاء</button>
+                <button onclick="closeModal()" class="flex-1 bg-gray-400 text-white py-2 rounded-lg">إلغاء</button>
             </div>
         </div>
     </div>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzubliIKgA1co_DGcLkkH1xa1M8v6M7g_DnRv62e3xGZuKvWeE59t2x7wTkoKMOf6T2/exec";
-        let currentRequestId = null;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('perm-id').innerText = 'PERM-' + Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('req-date').valueAsDate = new Date();
-        });
+        
+        // دالة لتصحيح شكل الوقت القادم من جوجل شيت
+        function formatTime(timeStr) {
+            if (!timeStr) return "--:--";
+            // إذا كان الوقت قادم كأجزاء من اليوم (مثل 0.333) نقوم بتحويله
+            if (!isNaN(timeStr) && timeStr !== "") {
+                let totalMinutes = Math.round(timeStr * 24 * 60);
+                let hours = Math.floor(totalMinutes / 60);
+                let minutes = totalMinutes % 60;
+                return (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
+            }
+            return timeStr;
+        }
 
         function showSection(id) {
             document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
@@ -132,12 +135,11 @@
         }
 
         function showAdminLogin() { showSection('admin-login'); }
-
         function loginAdmin() {
             if(document.getElementById('admin-pass').value === 'oman26') {
                 showSection('admin-dashboard');
                 loadRequests();
-            } else { alert('خطأ!'); }
+            } else { alert('خطأ'); }
         }
 
         function toggleTimeFields() {
@@ -161,22 +163,15 @@
                 empFile: document.getElementById('emp-file').value,
                 status: 'pending'
             };
-
-            if(!data.empName) return alert('أدخل الاسم');
             btn.disabled = true;
-            btn.innerText = "جاري الإرسال...";
-
-            try {
-                await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                alert('تم الإرسال بنجاح ✅');
-                location.reload();
-            } catch (e) { alert('خطأ'); btn.disabled = false; }
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            alert('تم الإرسال ✅');
+            location.reload();
         }
 
         async function loadRequests() {
             const tbody = document.getElementById('requests-table-body');
             tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">جاري التحميل...</td></tr>';
-
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
@@ -186,19 +181,20 @@
                     const statusText = r[6] === 'approved' ? 'مقبول' : (r[6] === 'rejected' ? 'مرفوض' : 'انتظار');
                     const statusColor = r[6] === 'approved' ? 'text-green-600' : (r[6] === 'rejected' ? 'text-red-600' : 'text-orange-500');
                     
-                    // قراءة الوقت من العمود K (رقم 10) والعمود L (رقم 11)
-                    const timeFrom = r[10] || "";
-                    const timeTo = r[11] || "";
-                    const timing = timeTo ? `${timeFrom} - ${timeTo}` : timeFrom;
+                    // r[10] هو الوقت من، r[11] هو الوقت إلى، r[5] هو السبب
+                    const timeFrom = formatTime(r[10]);
+                    const timeTo = formatTime(r[11]);
+                    const reason = r[5] || "لا يوجد سبب";
+                    const timing = (r[11] && r[11] !== "") ? `${timeFrom} - ${timeTo}` : timeFrom;
 
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-red-50 text-sm">
-                            <td class="p-3 font-bold text-red-900">${r[0]}</td>
-                            <td class="p-3">${r[2]}</td>
+                            <td class="p-3 font-bold">${r[2]}</td>
+                            <td class="p-3 text-gray-600 truncate max-w-[150px]">${reason}</td>
                             <td class="p-3 text-center font-bold text-blue-800">${timing}</td>
                             <td class="p-3 text-center font-bold ${statusColor}">${statusText}</td>
                             <td class="p-3 text-center">
-                                <button onclick="openApprovalModal('${r[0]}', '${r[2]}', '${r[5]}')" class="bg-red-800 text-white px-3 py-1 rounded text-xs">قرار</button>
+                                <button onclick="openApprovalModal('${r[0]}', '${r[2]}', '${reason}')" class="bg-red-800 text-white px-3 py-1 rounded text-xs">قرار</button>
                             </td>
                         </tr>`;
                 });
@@ -220,6 +216,9 @@
             closeModal();
             loadRequests();
         }
+
+        document.getElementById('perm-id').innerText = 'PERM-' + Math.floor(1000 + Math.random() * 9000);
+        document.getElementById('req-date').valueAsDate = new Date();
     </script>
 </body>
 </html>
