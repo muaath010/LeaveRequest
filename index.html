@@ -10,12 +10,10 @@
         body { font-family: 'Tajawal', sans-serif; background-color: #fffaf0; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3); }
         .red-gradient { background: linear-gradient(135deg, #800000 0%, #b91c1c 100%); }
-        .gold-text { color: #d4af37; }
-        .no-print { display: block; }
-        @media print { .no-print { display: none; } }
-        /* أنيميشن بسيط */
         .fade-in { animation: fadeIn 0.5s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* تحسين مظهر الجدول في الجوال */
+        @media (max-width: 640px) { .hide-on-mobile { display: none; } }
     </style>
 </head>
 <body class="text-gray-800">
@@ -24,7 +22,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-lg md:text-xl font-bold flex items-center gap-2">
                 <span class="text-yellow-400 text-2xl">⭐</span> 
-                مدرسة محمد بن سليمان الغافري (5-10)
+                مدرسة محمد بن سليمان الغافري
             </h1>
             <div class="flex gap-2">
                 <button onclick="showSection('user-form')" class="px-3 py-1 md:px-4 md:py-2 hover:bg-red-800 rounded-lg transition text-sm">تقديم طلب</button>
@@ -39,20 +37,20 @@
             <div class="max-w-4xl mx-auto glass p-6 md:p-10 rounded-3xl shadow-2xl border-t-8 border-red-800">
                 <div class="flex justify-between items-start mb-8 border-b border-yellow-100 pb-4">
                     <div class="text-right">
-                        <p class="font-bold text-red-900">رقم الموظف: <input type="text" id="emp-id" class="border-b border-red-200 outline-none w-20 text-center"></p>
+                        <p class="font-bold text-red-900 text-sm md:text-base">رقم الموظف: <input type="text" id="emp-id" class="border-b border-red-200 outline-none w-16 md:w-20 text-center bg-transparent"></p>
                     </div>
                     <div class="text-center">
-                        <h2 class="text-2xl md:text-3xl font-bold text-red-900">طلب إستئذان إلكتروني</h2>
-                        <p class="text-yellow-700 font-bold mt-2">رقم الاستئذان: <span id="perm-id" class="font-mono text-red-600">---</span></p>
+                        <h2 class="text-xl md:text-3xl font-bold text-red-900">طلب إستئذان إلكتروني</h2>
+                        <p class="text-yellow-700 font-bold mt-1 text-xs md:text-sm">رقم الاستئذان: <span id="perm-id" class="font-mono text-red-600">---</span></p>
                     </div>
                     <div class="text-left">
-                        <p class="font-bold text-red-900">التاريخ: <input type="date" id="req-date" class="outline-none text-sm"></p>
+                        <p class="font-bold text-red-900 text-xs md:text-sm">التاريخ: <br><input type="date" id="req-date" class="outline-none bg-transparent"></p>
                     </div>
                 </div>
 
                 <div class="space-y-6">
-                    <div class="bg-red-50 p-6 rounded-xl border-r-8 border-yellow-500 shadow-sm leading-loose text-lg">
-                        <p class="font-bold text-red-900">الفاضل/ مدير مدرسة محمد بن سليمان الغافري للتعليم الأساسي (5-10) المحترم</p>
+                    <div class="bg-red-50 p-6 rounded-xl border-r-8 border-yellow-500 shadow-sm leading-loose">
+                        <p class="font-bold text-red-900 md:text-lg">الفاضل/ مدير مدرسة محمد بن سليمان الغافري للتعليم الأساسي (5-10) المحترم</p>
                         <p class="text-red-800">السلام عليكم ورحمة الله وبركاته وبعد،،،</p>
                     </div>
 
@@ -101,16 +99,10 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-end pt-4">
-                        <div class="text-center border-b-2 border-dotted border-red-900 px-8">
-                            <p class="text-gray-400 text-xs mb-8">توقيع مقدم الطلب (إلكتروني)</p>
-                        </div>
-                    </div>
-
                     <div class="bg-red-900 text-white p-5 rounded-2xl text-sm leading-relaxed border-l-8 border-yellow-500 shadow-lg">
-                        <p class="font-bold text-yellow-400 mb-2 italic underline text-base">ملاحظة هامة:</p>
-                        <p>1- يرجى استخدام جهاز البصمة عند الانصراف في حال عدم العودة قبل نهاية الدوام الرسمي.</p>
-                        <p>2- لا يعتبر هذا المرفق كإجازة يتمتع بها الموظف ليوم كامل في حال خروجه من الدوام الرسمي.</p>
+                        <p class="font-bold text-yellow-400 mb-1 underline">ملاحظة هامة:</p>
+                        <p>1- يرجى استخدام جهاز البصمة عند الانصراف في حال عدم العودة.</p>
+                        <p>2- لا يعتبر هذا المرفق كإجازة يتمتع بها الموظف ليوم كامل.</p>
                     </div>
 
                     <button id="btn-submit" onclick="submitRequest()" class="w-full red-gradient text-white py-5 rounded-2xl font-bold text-2xl hover:shadow-2xl transform hover:-translate-y-1 transition-all border-b-4 border-yellow-600 active:scale-95">
@@ -122,31 +114,31 @@
 
         <section id="admin-login" class="section-content hidden fade-in">
             <div class="max-w-md mx-auto glass p-10 rounded-3xl shadow-2xl mt-20 text-center border-b-8 border-yellow-500">
-                <div class="bg-red-900 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl border-4 border-yellow-500">
-                    <span class="text-4xl text-yellow-400">🔒</span>
+                <div class="bg-red-900 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl border-4 border-yellow-500">
+                    <span class="text-3xl text-yellow-400">🔒</span>
                 </div>
-                <h2 class="text-2xl font-bold text-red-900 mb-6">منصة الإدارة المدرسية</h2>
+                <h2 class="text-2xl font-bold text-red-900 mb-6">منصة الإدارة</h2>
                 <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-4 border-2 border-red-50 rounded-xl mb-4 text-center text-2xl outline-none focus:border-yellow-500 tracking-widest">
-                <button onclick="loginAdmin()" class="w-full red-gradient text-white py-4 rounded-xl font-bold text-xl shadow-lg">دخول النظام</button>
+                <button onclick="loginAdmin()" class="w-full red-gradient text-white py-4 rounded-xl font-bold text-xl shadow-lg">دخول</button>
             </div>
         </section>
 
         <section id="admin-dashboard" class="section-content hidden fade-in">
             <div class="glass p-6 md:p-8 rounded-3xl shadow-2xl border-t-8 border-red-900">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b pb-4">
-                    <h2 class="text-2xl md:text-3xl font-bold text-red-900">سجل طلبات الاستئذان السحابي</h2>
-                    <button onclick="logoutAdmin()" class="bg-red-100 text-red-800 px-8 py-2 rounded-full font-bold hover:bg-red-200 transition shadow-sm">تسجيل خروج آمن</button>
+                    <h2 class="text-2xl font-bold text-red-900">سجل طلبات الاستئذان السحابي</h2>
+                    <button onclick="logoutAdmin()" class="bg-red-100 text-red-800 px-6 py-2 rounded-full font-bold hover:bg-red-200 transition shadow-sm">خروج</button>
                 </div>
                 
-                <div class="overflow-x-auto rounded-2xl shadow-inner">
+                <div class="overflow-x-auto rounded-2xl shadow-inner border">
                     <table class="w-full text-right border-collapse">
                         <thead>
                             <tr class="bg-red-900 text-yellow-400">
-                                <th class="p-4 border-l border-red-800 text-sm">رقم الطلب</th>
-                                <th class="p-4 border-l border-red-800 text-sm">الموظف</th>
-                                <th class="p-4 border-l border-red-800 text-sm">التاريخ</th>
-                                <th class="p-4 border-l border-red-800 text-sm">نوع الطلب</th>
-                                <th class="p-4 border-l border-red-800 text-sm text-center">الحالة</th>
+                                <th class="p-4 text-sm">رقم الطلب</th>
+                                <th class="p-4 text-sm">الموظف</th>
+                                <th class="p-4 text-sm hide-on-mobile">التاريخ</th>
+                                <th class="p-4 text-sm hide-on-mobile">النوع</th>
+                                <th class="p-4 text-sm text-center">الحالة</th>
                             </tr>
                         </thead>
                         <tbody id="requests-table-body" class="bg-white">
@@ -158,8 +150,8 @@
     </div>
 
     <script>
-        // --- الإعدادات الأساسية ---
-        const SCRIPT_URL = https://script.google.com/macros/s/AKfycbyG9gdzStVwJfND4EQihLLckZOE-UzTN-HbDcdZQvvOBaTmCPxtsLBfZveIX__wtVf9/exec
+        // --- الرابط الخاص بك مدمج هنا ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyG9gdzStVwJfND4EQihLLckZOE-UzTN-HbDcdZQvvOBaTmCPxtsLBfZveIX__wtVf9/exec"; 
         const ADMIN_PASS = "oman26";
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -181,7 +173,7 @@
                 showSection('admin-dashboard');
                 loadRequests();
             } else {
-                alert('عذراً، كلمة المرور غير صحيحة!');
+                alert('كلمة المرور غير صحيحة!');
             }
         }
 
@@ -189,10 +181,8 @@
             const type = document.getElementById('leave-type').value;
             const divTo = document.getElementById('div-to');
             const labelFrom = document.getElementById('label-from');
-            
-            if(type === 'late') { labelFrom.innerText = 'حتى الساعة:'; divTo.style.visibility = 'hidden'; }
-            else if(type === 'early') { labelFrom.innerText = 'من الساعة:'; divTo.style.visibility = 'hidden'; }
-            else { labelFrom.innerText = 'من الساعة:'; divTo.style.visibility = 'visible'; }
+            if(type === 'late' || type === 'early') { divTo.style.visibility = 'hidden'; labelFrom.innerText = type === 'late' ? 'حتى الساعة:' : 'من الساعة:'; }
+            else { divTo.style.visibility = 'visible'; labelFrom.innerText = 'من الساعة:'; }
         }
 
         async function submitRequest() {
@@ -213,56 +203,53 @@
                 comment: ''
             };
 
-            if(!req.empName || !req.empId || !req.reason) return alert('يرجى تعبئة كافة الحقول الأساسية!');
+            if(!req.empName || !req.empId || !req.reason) return alert('يرجى تعبئة كافة الحقول!');
 
             btn.disabled = true;
-            btn.innerText = "جاري الحفظ في السحابة... ⏳";
+            btn.innerText = "جاري الحفظ سحابياً... ⏳";
 
             try {
                 await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // لتجنب مشاكل CORS مع Google
-                    cache: 'no-cache',
+                    mode: 'no-cors',
                     body: JSON.stringify(req)
                 });
-                alert('تم إرسال الطلب بنجاح إلى سجلات الإدارة ✅');
+                alert('تم إرسال الطلب بنجاح ✅');
                 location.reload();
             } catch (e) {
-                alert('حدث خطأ في الاتصال بالسحابة، يرجى المحاولة لاحقاً');
+                alert('خطأ في الاتصال، حاول مرة أخرى');
                 btn.disabled = false;
-                btn.innerText = "إرسال الطلب للاعتماد الرسمي 🚀";
             }
         }
 
         async function loadRequests() {
             const tbody = document.getElementById('requests-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center font-bold text-red-900">جاري جلب السجلات من جوجل شيت... ⏳</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center font-bold text-red-900 animate-pulse">جاري جلب السجلات... ⏳</td></tr>';
 
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
-                
                 tbody.innerHTML = '';
+                
                 if(data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">لا توجد طلبات مسجلة حالياً</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">لا توجد طلبات مسجلة</td></tr>';
                     return;
                 }
 
                 data.reverse().forEach(r => {
-                    const statusClass = r[8] === 'approved' ? 'bg-green-100 text-green-800' : (r[8] === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800');
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-red-50 transition">
                             <td class="p-4 font-bold text-red-900">${r[0]}</td>
                             <td class="p-4 font-medium">${r[2]}</td>
-                            <td class="p-4 text-gray-600 text-sm">${r[3]}</td>
-                            <td class="p-4 text-xs font-bold">${r[4]}</td>
+                            <td class="p-4 text-gray-600 text-xs hide-on-mobile">${r[3]}</td>
+                            <td class="p-4 text-xs font-bold hide-on-mobile">${r[4]}</td>
                             <td class="p-4 text-center">
-                                <span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">${r[8]}</span>
+                                <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-orange-100 text-orange-800">${r[8]}</span>
                             </td>
                         </tr>`;
                 });
             } catch (e) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">عذراً، فشل الاتصال بقاعدة البيانات. تأكد من رابط السكربت.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">خطأ في جلب البيانات من السحابة</td></tr>';
             }
         }
     </script>
