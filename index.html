@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الاستئذان المعتمد | مدرسة الغافري</title>
+    <title>نظام الاستئذان المعتمد | مدرسة محمد بن سليمان الغافري</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -12,13 +12,28 @@
         .red-gradient { background: linear-gradient(135deg, #800000 0%, #b91c1c 100%); }
         .hidden { display: none; }
         @media (max-width: 640px) { .hide-on-mobile { display: none; } }
+
+        /* أنيميشن النبض للشعار */
+        @keyframes pulse-gold {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(234, 179, 8, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+        }
+        .logo-pulse {
+            animation: pulse-gold 2s infinite;
+            border: 2px solid #eab308;
+        }
     </style>
 </head>
 <body class="text-gray-800">
 
     <nav class="bg-red-900 text-white p-4 shadow-xl border-b-4 border-yellow-500 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-lg md:text-xl font-bold">⭐ مدرسة محمد بن سليمان الغافري</h1>
+            <div class="flex items-center gap-3">
+                <img src="https://i.ibb.co/pD8X3mw/logo.jpg" alt="Logo" class="w-12 h-12 rounded-full logo-pulse object-cover">
+                <h1 class="text-lg md:text-xl font-bold">مدرسة محمد بن سليمان الغافري</h1>
+            </div>
+            
             <div class="flex gap-2">
                 <button onclick="showSection('user-form')" class="px-3 py-1 hover:bg-red-800 rounded-lg text-sm transition">تقديم طلب</button>
                 <button onclick="showAdminLogin()" class="px-3 py-1 bg-yellow-500 text-red-900 font-bold hover:bg-yellow-400 rounded-lg text-sm shadow-md transition">المدير</button>
@@ -27,7 +42,6 @@
     </nav>
 
     <div class="container mx-auto mt-6 px-4 pb-12">
-        
         <section id="user-form" class="section-content">
             <div class="max-w-3xl mx-auto glass p-6 md:p-10 rounded-2xl shadow-2xl border-t-8 border-red-900">
                 <div class="text-center mb-6">
@@ -87,7 +101,6 @@
                     <h2 class="text-xl font-bold text-red-900 underline decoration-yellow-500">سجل طلبات الاستئذان</h2>
                     <button onclick="showSection('user-form')" class="text-red-600 font-bold border-2 border-red-600 px-4 py-1 rounded-full hover:bg-red-600 hover:text-white transition">خروج</button>
                 </div>
-                
                 <div class="overflow-x-auto rounded-xl">
                     <table class="w-full text-right border-collapse">
                         <thead>
@@ -123,19 +136,10 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzubliIKgA1co_DGcLkkH1xa1M8v6M7g_DnRv62e3xGZuKvWeE59t2x7wTkoKMOf6T2/exec";
         let currentRequestId = null;
 
-        // دالة تنظيف الوقت من الصيغة الطويلة (1899-12-30T...)
         function formatTimeClean(timeStr) {
             if (!timeStr) return "--:--";
             let s = String(timeStr);
-            if (s.includes('T')) {
-                return s.split('T')[1].substring(0, 5);
-            }
-            if (!isNaN(s) && s !== "") {
-                let totalMinutes = Math.round(Number(s) * 24 * 60);
-                let hours = Math.floor(totalMinutes / 60);
-                let minutes = totalMinutes % 60;
-                return (hours < 10 ? '0' : '') + hours + ":" + (minutes < 10 ? '0' : '') + minutes;
-            }
+            if (s.includes('T')) return s.split('T')[1].substring(0, 5);
             return s;
         }
 
@@ -177,7 +181,7 @@
 
             if(!data.empName || !data.empId) return alert('يرجى تعبئة البيانات الأساسية');
             btn.disabled = true;
-            btn.innerText = "جاري الحفظ في السحابة... ⏳";
+            btn.innerText = "جاري الحفظ في السحابة... ";
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
@@ -198,20 +202,18 @@
                 data.reverse().forEach(r => {
                     const statusText = r[6] === 'approved' ? 'مقبول' : (r[6] === 'rejected' ? 'مرفوض' : 'انتظار');
                     const statusColor = r[6] === 'approved' ? 'text-green-600' : (r[6] === 'rejected' ? 'text-red-600' : 'text-orange-500');
-                    
                     const timeFrom = formatTimeClean(r[10]);
                     const timeTo = formatTimeClean(r[11]);
-                    const reason = r[5] || "لم يذكر سبب";
                     const timing = (r[11] && r[11] !== "") ? `${timeFrom} - ${timeTo}` : timeFrom;
 
                     tbody.innerHTML += `
                         <tr class="border-b hover:bg-red-50 transition text-sm">
                             <td class="p-4 font-bold text-red-900">${r[2]}</td>
-                            <td class="p-4 text-gray-600 truncate max-w-[150px] hide-on-mobile">${reason}</td>
+                            <td class="p-4 text-gray-600 truncate max-w-[150px] hide-on-mobile">${r[5] || "لم يذكر سبب"}</td>
                             <td class="p-4 text-center font-bold text-blue-800">${timing}</td>
                             <td class="p-4 text-center font-extrabold ${statusColor}">${statusText}</td>
                             <td class="p-4 text-center">
-                                <button onclick="openApprovalModal('${r[0]}', '${r[2]}', '${reason}')" class="bg-red-800 text-white px-4 py-1 rounded-full text-xs shadow-md">عرض</button>
+                                <button onclick="openApprovalModal('${r[0]}', '${r[2]}', '${r[5]}')" class="bg-red-800 text-white px-4 py-1 rounded-full text-xs shadow-md">عرض</button>
                             </td>
                         </tr>`;
                 });
