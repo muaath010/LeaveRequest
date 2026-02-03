@@ -7,225 +7,264 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #fffaf0; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #fffaf0; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px); border: 1px solid rgba(212, 175, 55, 0.3); }
         .red-gradient { background: linear-gradient(135deg, #800000 0%, #b91c1c 100%); }
+        .gold-text { color: #d4af37; }
         .no-print { display: block; }
         @media print { .no-print { display: none; } }
+        /* أنيميشن بسيط */
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="text-gray-800">
 
-    <nav class="bg-red-900 text-white p-4 shadow-lg no-print border-b-4 border-yellow-500">
+    <nav class="bg-red-900 text-white p-4 shadow-xl no-print border-b-4 border-yellow-500 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">
-                <span class="text-yellow-400">⭐</span> مدرسة محمد بن سليمان الغافري (5-10)
+            <h1 class="text-lg md:text-xl font-bold flex items-center gap-2">
+                <span class="text-yellow-400 text-2xl">⭐</span> 
+                مدرسة محمد بن سليمان الغافري (5-10)
             </h1>
-            <div>
-                <button onclick="showSection('user-form')" class="px-4 py-2 hover:bg-red-800 rounded transition">تقديم طلب</button>
-                <button onclick="showAdminLogin()" class="px-4 py-2 bg-yellow-500 text-red-900 hover:bg-yellow-400 rounded-lg font-bold mr-2 shadow-md transition">بوابة المدير</button>
+            <div class="flex gap-2">
+                <button onclick="showSection('user-form')" class="px-3 py-1 md:px-4 md:py-2 hover:bg-red-800 rounded-lg transition text-sm">تقديم طلب</button>
+                <button onclick="showAdminLogin()" class="px-3 py-1 md:px-4 md:py-2 bg-yellow-500 text-red-900 hover:bg-yellow-400 rounded-lg font-bold shadow-md transition text-sm">بوابة المدير</button>
             </div>
         </div>
     </nav>
 
-    <div class="container mx-auto mt-8 px-4 pb-12">
+    <div class="container mx-auto mt-6 px-4 pb-12">
         
-        <section id="user-form" class="section-content">
-            <div class="max-w-3xl mx-auto glass p-8 rounded-2xl shadow-2xl border-t-8 border-red-800">
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-bold text-red-900">نموذج إستئذان موظف</h2>
-                    <p class="text-yellow-700 font-medium">رقم الاستئذان: <span id="perm-id" class="font-mono font-bold text-red-600">---</span></p>
+        <section id="user-form" class="section-content fade-in">
+            <div class="max-w-4xl mx-auto glass p-6 md:p-10 rounded-3xl shadow-2xl border-t-8 border-red-800">
+                <div class="flex justify-between items-start mb-8 border-b border-yellow-100 pb-4">
+                    <div class="text-right">
+                        <p class="font-bold text-red-900">رقم الموظف: <input type="text" id="emp-id" class="border-b border-red-200 outline-none w-20 text-center"></p>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-2xl md:text-3xl font-bold text-red-900">طلب إستئذان إلكتروني</h2>
+                        <p class="text-yellow-700 font-bold mt-2">رقم الاستئذان: <span id="perm-id" class="font-mono text-red-600">---</span></p>
+                    </div>
+                    <div class="text-left">
+                        <p class="font-bold text-red-900">التاريخ: <input type="date" id="req-date" class="outline-none text-sm"></p>
+                    </div>
                 </div>
 
                 <div class="space-y-6">
-                    <div class="bg-red-50 p-5 rounded-lg border-r-8 border-yellow-500 mb-6 shadow-sm">
-                        <p class="font-bold text-red-900 text-lg">الفاضل/ مدير مدرسة محمد بن سليمان الغافري للتعليم الأساسي (5-10) المحترم</p>
+                    <div class="bg-red-50 p-6 rounded-xl border-r-8 border-yellow-500 shadow-sm leading-loose text-lg">
+                        <p class="font-bold text-red-900">الفاضل/ مدير مدرسة محمد بن سليمان الغافري للتعليم الأساسي (5-10) المحترم</p>
                         <p class="text-red-800">السلام عليكم ورحمة الله وبركاته وبعد،،،</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block font-bold text-red-900 mb-1">رقم الموظف</label>
-                            <input type="text" id="emp-id" class="w-full p-2 border-2 border-red-100 rounded focus:border-yellow-500 outline-none transition">
-                        </div>
-                        <div>
-                            <label class="block font-bold text-red-900 mb-1">التاريخ</label>
-                            <input type="date" id="req-date" class="w-full p-2 border-2 border-red-100 rounded focus:border-yellow-500 outline-none transition">
-                        </div>
+                    <div class="text-center">
+                        <p class="font-bold text-xl text-red-900 border-b-2 border-yellow-500 inline-block mb-4">الموضوع: طلب إستئذان</p>
                     </div>
 
-                    <div class="bg-yellow-50 p-6 rounded-xl border border-yellow-200">
-                        <p class="font-bold mb-3 text-red-900 text-xl border-b-2 border-yellow-500 inline-block">الموضوع: طلب إستئذان</p>
-                        <p class="mb-3 font-medium text-gray-700">أرجو تكرمكم بالموافقة على:</p>
-                        
-                        <select id="leave-type" class="w-full p-3 border-2 border-yellow-200 rounded-lg bg-white mb-4 font-bold text-red-900 shadow-inner" onchange="toggleTimeFields()">
+                    <p class="text-lg font-medium text-gray-700">أرجو تكرمكم بالموافقة على:</p>
+                    
+                    <div class="bg-yellow-50 p-6 rounded-2xl border border-yellow-200 shadow-inner">
+                        <select id="leave-type" class="w-full p-4 border-2 border-yellow-300 rounded-xl bg-white mb-6 font-bold text-red-900 text-lg shadow-sm outline-none focus:ring-2 focus:ring-red-500" onchange="toggleTimeFields()">
                             <option value="late">التأخر عن الدوام الرسمي</option>
                             <option value="during">الخروج من الدوام الرسمي والعودة</option>
-                            <option value="early">الانصراف المبكر حتى نهاية الدوام</option>
+                            <option value="early">الانصراف المبكر حتى نهاية الدوام الرسمي</option>
                         </select>
 
-                        <div id="time-inputs" class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label id="label-from" class="block text-sm font-bold text-red-800">من الساعة:</label>
-                                <input type="time" id="time-from" class="w-full p-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-400 outline-none">
+                        <div id="time-inputs" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex items-center gap-3">
+                                <label id="label-from" class="font-bold text-red-900 shrink-0">من الساعة:</label>
+                                <input type="time" id="time-from" class="w-full p-3 border-2 border-red-100 rounded-xl outline-none focus:border-yellow-500">
                             </div>
-                            <div id="div-to">
-                                <label class="block text-sm font-bold text-red-800">إلى الساعة:</label>
-                                <input type="time" id="time-to" class="w-full p-2 border border-yellow-300 rounded focus:ring-2 focus:ring-yellow-400 outline-none">
+                            <div id="div-to" class="flex items-center gap-3">
+                                <label class="font-bold text-red-900 shrink-0">إلى الساعة:</label>
+                                <input type="time" id="time-to" class="w-full p-3 border-2 border-red-100 rounded-xl outline-none focus:border-yellow-500">
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block font-bold text-red-900 mb-1 text-lg">وذلك للأسباب التالية:</label>
-                        <textarea id="reason" rows="3" class="w-full p-3 border-2 border-red-50 rounded-lg focus:border-yellow-500 outline-none shadow-inner" placeholder="يرجى كتابة سبب الاستئذان..."></textarea>
+                        <label class="block font-bold text-red-900 mb-2 text-lg">وذلك للأسباب التالية:</label>
+                        <textarea id="reason" rows="3" class="w-full p-4 border-2 border-red-50 rounded-2xl focus:border-yellow-500 outline-none shadow-inner text-lg" placeholder="اكتب السبب هنا..."></textarea>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t-2 border-yellow-100 pt-6">
-                        <input type="text" id="emp-name" placeholder="اسم الموظف" class="p-2 border rounded-lg bg-red-50 border-red-100 outline-none">
-                        <input type="text" id="emp-job" placeholder="الوظيفة" class="p-2 border rounded-lg bg-red-50 border-red-100 outline-none">
-                        <input type="text" id="emp-file" placeholder="رقم الملف" class="p-2 border rounded-lg bg-red-50 border-red-100 outline-none">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t-2 border-yellow-100">
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-red-800 px-2">اسم الموظف</label>
+                            <input type="text" id="emp-name" class="w-full p-3 border rounded-xl bg-red-50 outline-none focus:bg-white border-red-100">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-red-800 px-2">الوظيفة</label>
+                            <input type="text" id="emp-job" class="w-full p-3 border rounded-xl bg-red-50 outline-none focus:bg-white border-red-100">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-sm font-bold text-red-800 px-2">رقم الملف</label>
+                            <input type="text" id="emp-file" class="w-full p-3 border rounded-xl bg-red-50 outline-none focus:bg-white border-red-100">
+                        </div>
                     </div>
 
-                    <div class="bg-red-900 text-white p-4 rounded-lg text-sm space-y-2 border-l-8 border-yellow-500 shadow-md">
-                        <p class="font-bold text-yellow-400">ملاحظات هامة:</p>
+                    <div class="flex justify-end pt-4">
+                        <div class="text-center border-b-2 border-dotted border-red-900 px-8">
+                            <p class="text-gray-400 text-xs mb-8">توقيع مقدم الطلب (إلكتروني)</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-red-900 text-white p-5 rounded-2xl text-sm leading-relaxed border-l-8 border-yellow-500 shadow-lg">
+                        <p class="font-bold text-yellow-400 mb-2 italic underline text-base">ملاحظة هامة:</p>
                         <p>1- يرجى استخدام جهاز البصمة عند الانصراف في حال عدم العودة قبل نهاية الدوام الرسمي.</p>
-                        <p>2- لا يعتبر هذا المرفق كإجازة يتمتع بها الموظف ليوم كامل.</p>
+                        <p>2- لا يعتبر هذا المرفق كإجازة يتمتع بها الموظف ليوم كامل في حال خروجه من الدوام الرسمي.</p>
                     </div>
 
-                    <button onclick="submitRequest()" class="w-full red-gradient text-white py-4 rounded-xl font-bold text-xl hover:shadow-xl transition border-b-4 border-yellow-600">إرسال الطلب للاعتماد الرسمي</button>
+                    <button id="btn-submit" onclick="submitRequest()" class="w-full red-gradient text-white py-5 rounded-2xl font-bold text-2xl hover:shadow-2xl transform hover:-translate-y-1 transition-all border-b-4 border-yellow-600 active:scale-95">
+                        إرسال الطلب للاعتماد الرسمي 🚀
+                    </button>
                 </div>
             </div>
         </section>
 
-        <section id="admin-login" class="section-content hidden">
-            <div class="max-w-md mx-auto glass p-10 rounded-2xl shadow-2xl mt-20 text-center border-b-8 border-yellow-500">
-                <div class="bg-red-900 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <span class="text-3xl text-yellow-400">🔒</span>
+        <section id="admin-login" class="section-content hidden fade-in">
+            <div class="max-w-md mx-auto glass p-10 rounded-3xl shadow-2xl mt-20 text-center border-b-8 border-yellow-500">
+                <div class="bg-red-900 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl border-4 border-yellow-500">
+                    <span class="text-4xl text-yellow-400">🔒</span>
                 </div>
-                <h2 class="text-2xl font-bold text-red-900 mb-6">دخول الإدارة</h2>
-                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-3 border-2 border-red-100 rounded-lg mb-4 text-center text-xl outline-none focus:border-yellow-500">
-                <button onclick="loginAdmin()" class="w-full red-gradient text-white py-3 rounded-lg font-bold">دخول</button>
+                <h2 class="text-2xl font-bold text-red-900 mb-6">منصة الإدارة المدرسية</h2>
+                <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-4 border-2 border-red-50 rounded-xl mb-4 text-center text-2xl outline-none focus:border-yellow-500 tracking-widest">
+                <button onclick="loginAdmin()" class="w-full red-gradient text-white py-4 rounded-xl font-bold text-xl shadow-lg">دخول النظام</button>
             </div>
         </section>
 
-        <section id="admin-dashboard" class="section-content hidden">
-            <div class="glass p-8 rounded-2xl shadow-2xl border-t-8 border-red-900">
-                <div class="flex justify-between items-center mb-8 border-b pb-4">
-                    <h2 class="text-2xl font-bold text-red-900">سجل الطلبات الواردة</h2>
-                    <button onclick="logoutAdmin()" class="text-red-700 font-bold px-4 py-2 bg-red-50 rounded-lg">خروج</button>
+        <section id="admin-dashboard" class="section-content hidden fade-in">
+            <div class="glass p-6 md:p-8 rounded-3xl shadow-2xl border-t-8 border-red-900">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b pb-4">
+                    <h2 class="text-2xl md:text-3xl font-bold text-red-900">سجل طلبات الاستئذان السحابي</h2>
+                    <button onclick="logoutAdmin()" class="bg-red-100 text-red-800 px-8 py-2 rounded-full font-bold hover:bg-red-200 transition shadow-sm">تسجيل خروج آمن</button>
                 </div>
-                <div class="overflow-x-auto">
+                
+                <div class="overflow-x-auto rounded-2xl shadow-inner">
                     <table class="w-full text-right border-collapse">
                         <thead>
                             <tr class="bg-red-900 text-yellow-400">
-                                <th class="p-4 border">رقم الطلب</th>
-                                <th class="p-4 border">الموظف</th>
-                                <th class="p-4 border">التاريخ</th>
-                                <th class="p-4 border">الحالة</th>
-                                <th class="p-4 border">الإجراء</th>
+                                <th class="p-4 border-l border-red-800 text-sm">رقم الطلب</th>
+                                <th class="p-4 border-l border-red-800 text-sm">الموظف</th>
+                                <th class="p-4 border-l border-red-800 text-sm">التاريخ</th>
+                                <th class="p-4 border-l border-red-800 text-sm">نوع الطلب</th>
+                                <th class="p-4 border-l border-red-800 text-sm text-center">الحالة</th>
                             </tr>
                         </thead>
-                        <tbody id="requests-table-body"></tbody>
+                        <tbody id="requests-table-body" class="bg-white">
+                            </tbody>
                     </table>
                 </div>
             </div>
         </section>
     </div>
 
-    <div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-8 rounded-2xl max-w-lg w-full border-t-8 border-yellow-500">
-            <h3 class="text-2xl font-bold text-red-900 mb-4">اتخاذ قرار</h3>
-            <div id="modal-details" class="mb-4 text-sm bg-red-50 p-4 rounded-lg"></div>
-            <textarea id="admin-comment" class="w-full p-3 border-2 border-gray-100 rounded-lg mb-4 outline-none focus:border-red-500" placeholder="ملاحظات المدير..."></textarea>
-            <div class="flex gap-2">
-                <button onclick="updateStatus('approved')" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-bold">موافقة ✅</button>
-                <button onclick="updateStatus('rejected')" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold">رفض ❌</button>
-                <button onclick="closeModal()" class="flex-1 bg-gray-200 py-3 rounded-lg">إغلاق</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        let currentRequestId = null;
+        // --- الإعدادات الأساسية ---
+        const SCRIPT_URL = https://script.google.com/macros/s/AKfycbyG9gdzStVwJfND4EQihLLckZOE-UzTN-HbDcdZQvvOBaTmCPxtsLBfZveIX__wtVf9/exec
+        const ADMIN_PASS = "oman26";
 
-        // الدالة المسؤولة عن التحقق من كلمة المرور الجديدة
-        function loginAdmin() {
-            const passInput = document.getElementById('admin-pass').value;
-            if(passInput === 'oman26') { // كلمة المرور الجديدة هنا
-                showSection('admin-dashboard');
-                loadRequests();
-            } else {
-                alert('كلمة المرور غير صحيحة!');
-            }
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('perm-id').innerText = 'SQ-' + Math.floor(10000 + Math.random() * 90000);
+            document.getElementById('req-date').valueAsDate = new Date();
+        });
 
-        // باقي الدوال البرمجية لضمان عمل النظام
         function showSection(id) {
             document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
+            window.scrollTo(0,0);
         }
 
         function showAdminLogin() { showSection('admin-login'); }
         function logoutAdmin() { showSection('user-form'); }
 
+        function loginAdmin() {
+            if(document.getElementById('admin-pass').value === ADMIN_PASS) {
+                showSection('admin-dashboard');
+                loadRequests();
+            } else {
+                alert('عذراً، كلمة المرور غير صحيحة!');
+            }
+        }
+
         function toggleTimeFields() {
             const type = document.getElementById('leave-type').value;
             const divTo = document.getElementById('div-to');
             const labelFrom = document.getElementById('label-from');
-            if(type === 'late' || type === 'early') { divTo.style.visibility = 'hidden'; labelFrom.innerText = type === 'late' ? 'حتى الساعة:' : 'من الساعة:'; }
-            else { divTo.style.visibility = 'visible'; labelFrom.innerText = 'من الساعة:'; }
+            
+            if(type === 'late') { labelFrom.innerText = 'حتى الساعة:'; divTo.style.visibility = 'hidden'; }
+            else if(type === 'early') { labelFrom.innerText = 'من الساعة:'; divTo.style.visibility = 'hidden'; }
+            else { labelFrom.innerText = 'من الساعة:'; divTo.style.visibility = 'visible'; }
         }
 
-        function submitRequest() {
+        async function submitRequest() {
+            const btn = document.getElementById('btn-submit');
             const req = {
-                id: 'REQ-' + Math.floor(1000 + Math.random() * 9000),
+                action: "add",
+                id: document.getElementById('perm-id').innerText,
                 empId: document.getElementById('emp-id').value,
                 empName: document.getElementById('emp-name').value,
+                empJob: document.getElementById('emp-job').value,
+                empFile: document.getElementById('emp-file').value,
                 date: document.getElementById('req-date').value,
                 type: document.getElementById('leave-type').options[document.getElementById('leave-type').selectedIndex].text,
+                timeFrom: document.getElementById('time-from').value,
+                timeTo: document.getElementById('time-to').value,
                 reason: document.getElementById('reason').value,
-                status: 'pending'
+                status: 'قيد الانتظار',
+                comment: ''
             };
-            if(!req.empName || !req.empId) return alert('يرجى تعبئة البيانات!');
-            let requests = JSON.parse(localStorage.getItem('school_requests') || '[]');
-            requests.push(req);
-            localStorage.setItem('school_requests', JSON.stringify(requests));
-            alert('تم الإرسال بنجاح');
-            location.reload();
+
+            if(!req.empName || !req.empId || !req.reason) return alert('يرجى تعبئة كافة الحقول الأساسية!');
+
+            btn.disabled = true;
+            btn.innerText = "جاري الحفظ في السحابة... ⏳";
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // لتجنب مشاكل CORS مع Google
+                    cache: 'no-cache',
+                    body: JSON.stringify(req)
+                });
+                alert('تم إرسال الطلب بنجاح إلى سجلات الإدارة ✅');
+                location.reload();
+            } catch (e) {
+                alert('حدث خطأ في الاتصال بالسحابة، يرجى المحاولة لاحقاً');
+                btn.disabled = false;
+                btn.innerText = "إرسال الطلب للاعتماد الرسمي 🚀";
+            }
         }
 
-        function loadRequests() {
-            const requests = JSON.parse(localStorage.getItem('school_requests') || '[]');
+        async function loadRequests() {
             const tbody = document.getElementById('requests-table-body');
-            tbody.innerHTML = '';
-            requests.reverse().forEach(r => {
-                const sColor = r.status === 'approved' ? 'text-green-600' : (r.status === 'rejected' ? 'text-red-600' : 'text-orange-500');
-                tbody.innerHTML += `<tr class="border-b"><td class="p-4 font-bold">${r.id}</td><td class="p-4">${r.empName}</td><td class="p-4">${r.date}</td><td class="p-4 font-bold ${sColor}">${r.status}</td><td class="p-4"><button onclick="openApprovalModal('${r.id}')" class="bg-yellow-500 text-red-900 px-3 py-1 rounded-full text-xs font-bold">قرار</button></td></tr>`;
-            });
-        }
+            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center font-bold text-red-900">جاري جلب السجلات من جوجل شيت... ⏳</td></tr>';
 
-        function openApprovalModal(id) {
-            currentRequestId = id;
-            const r = JSON.parse(localStorage.getItem('school_requests')).find(req => req.id === id);
-            document.getElementById('modal-details').innerHTML = `<strong>الموظف:</strong> ${r.empName} <br> <strong>السبب:</strong> ${r.reason}`;
-            document.getElementById('approval-modal').classList.remove('hidden');
-        }
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                
+                tbody.innerHTML = '';
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">لا توجد طلبات مسجلة حالياً</td></tr>';
+                    return;
+                }
 
-        function closeModal() { document.getElementById('approval-modal').classList.add('hidden'); }
-
-        function updateStatus(status) {
-            let requests = JSON.parse(localStorage.getItem('school_requests'));
-            const idx = requests.findIndex(req => req.id === currentRequestId);
-            requests[idx].status = status;
-            localStorage.setItem('school_requests', JSON.stringify(requests));
-            closeModal(); loadRequests();
+                data.reverse().forEach(r => {
+                    const statusClass = r[8] === 'approved' ? 'bg-green-100 text-green-800' : (r[8] === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800');
+                    tbody.innerHTML += `
+                        <tr class="border-b hover:bg-red-50 transition">
+                            <td class="p-4 font-bold text-red-900">${r[0]}</td>
+                            <td class="p-4 font-medium">${r[2]}</td>
+                            <td class="p-4 text-gray-600 text-sm">${r[3]}</td>
+                            <td class="p-4 text-xs font-bold">${r[4]}</td>
+                            <td class="p-4 text-center">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold ${statusClass}">${r[8]}</span>
+                            </td>
+                        </tr>`;
+                });
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">عذراً، فشل الاتصال بقاعدة البيانات. تأكد من رابط السكربت.</td></tr>';
+            }
         }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('perm-id').innerText = 'REQ-' + Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('req-date').valueAsDate = new Date();
-        });
     </script>
 </body>
 </html>
