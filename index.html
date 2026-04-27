@@ -194,13 +194,16 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
                     تحميل PDF
                 </button>
+                <button onclick="deleteCurrentRequest()" class="w-full md:w-auto bg-gray-800 text-white py-2 px-4 rounded-xl font-bold hover:bg-gray-900 transition flex items-center justify-center gap-2">
+                    🗑️ حذف الطلب
+                </button>
                 <button onclick="closeModal()" class="w-full md:w-auto bg-gray-400 text-white py-2 px-6 rounded-xl font-bold hover:bg-gray-500 transition">إغلاق</button>
             </div>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwHJVwbix8Vtec3plBtq5cr4Q3T-F15t9_gabrwYBQGYs8CNO05LUX3RXrrcYE-5NQa/exec"; // <--- تأكد من وضع رابط الـ Deploy هنا
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxnnqOFqhI0Iy0MNEuWGByD0gj4DjP2OMDHnLtV58KxYqXFOU-Xa2j11PGSen1GkBVG/exec"; // <--- تأكد من وضع رابط الـ Deploy هنا
         let currentRequestId = null;
         let globalRequests = []; 
 
@@ -212,7 +215,7 @@
         const canvas = document.getElementById('sig-canvas');
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
-        let currentInkColor = '#000080'; // أزرق افتراضي
+        let currentInkColor = '#000080'; 
 
         function changeInk(color, btn) {
             currentInkColor = color;
@@ -242,7 +245,7 @@
             
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
-            ctx.strokeStyle = currentInkColor; // تطبيق اللون المختار
+            ctx.strokeStyle = currentInkColor; 
             ctx.lineTo(x, y);
             ctx.stroke();
             ctx.beginPath();
@@ -256,7 +259,7 @@
         function getSignatureData() {
             const blank = document.createElement('canvas');
             blank.width = canvas.width; blank.height = canvas.height;
-            if(canvas.toDataURL() === blank.toDataURL()) return ""; // يعود بقيمة فارغة إذا لم يوقع
+            if(canvas.toDataURL() === blank.toDataURL()) return ""; 
             return canvas.toDataURL('image/png');
         }
         /* -------------------------- */
@@ -478,7 +481,6 @@
                 <div class="col-span-2 text-left text-xs text-gray-400 mt-2">رقم الطلب المرجعي: ${req[0]} | وقت التقديم: ${req[12] || '---'}</div>
             `;
             
-            // التعامل مع التوقيع (إظهاره إذا وجد أو إخفاؤه)
             const sigDiv = document.getElementById('emp-sig-display');
             if (req[13] && req[13].length > 100) {
                 sigDiv.innerHTML = `<img src="${req[13]}" class="max-h-full max-w-full object-contain mix-blend-multiply" style="filter: contrast(1.2) brightness(0.9);">`;
@@ -520,6 +522,28 @@
 
             const data = { action: "update", id: currentRequestId, status: status, comment: comment };
             fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        }
+
+        // دالة الحذف الجديدة
+        async function deleteCurrentRequest() {
+            const isConfirmed = confirm('⚠️ تحذير: هل أنت متأكد من حذف هذا الطلب نهائياً؟\nلا يمكن التراجع عن هذا الإجراء وسيتم مسحه من السجلات تماماً.');
+            if (!isConfirmed) return;
+
+            const idToDelete = currentRequestId;
+
+            // تحديث وهمي للحذف من الشاشة فوراً
+            globalRequests = globalRequests.filter(r => r[0] !== idToDelete);
+            sessionStorage.setItem('schoolRequestsCache', JSON.stringify(globalRequests)); 
+            filterTable(); 
+            closeModal(); 
+
+            // إرسال أمر الحذف للخلفية
+            const data = { action: "delete", id: idToDelete };
+            try {
+                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+            } catch (e) {
+                console.error("فشل إرسال طلب الحذف", e);
+            }
         }
 
         document.getElementById('perm-id').innerText = 'PERM-' + Math.floor(1000 + Math.random() * 9000);
