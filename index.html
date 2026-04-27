@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام الاستئذان | مدرسة محمد بن سليمان الغافري</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://i.ibb.co/pD8X3mw/logo.jpg">
+    <meta name="theme-color" content="#800000">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -32,17 +38,19 @@
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <img src="https://i.ibb.co/pD8X3mw/logo.jpg" alt="Logo" class="w-12 h-12 rounded-full logo-pulse object-cover">
-                <h1 class="text-lg md:text-xl font-bold">مدرسة محمد بن سليمان الغافري</h1>
+                <h1 class="text-lg md:text-xl font-bold hide-on-mobile">مدرسة محمد بن سليمان الغافري</h1>
             </div>
             
             <div class="flex gap-2">
                 <button onclick="showSection('user-form')" class="px-3 py-1 hover:bg-red-800 rounded-lg text-sm transition">تقديم طلب</button>
+                <button onclick="showSection('employee-check')" class="px-3 py-1 bg-white text-red-900 font-bold hover:bg-gray-200 rounded-lg text-sm shadow-md transition">طلباتي</button>
                 <button onclick="showAdminLogin()" class="px-3 py-1 bg-yellow-500 text-red-900 font-bold hover:bg-yellow-400 rounded-lg text-sm shadow-md transition">المدير</button>
             </div>
         </div>
     </nav>
 
     <div class="container mx-auto mt-6 px-4 pb-12">
+        
         <section id="user-form" class="section-content">
             <div class="max-w-3xl mx-auto glass p-6 md:p-10 rounded-2xl shadow-2xl border-t-8 border-red-900">
                 <div class="text-center mb-6">
@@ -88,6 +96,18 @@
             </div>
         </section>
 
+        <section id="employee-check" class="section-content hidden">
+            <div class="max-w-4xl mx-auto glass p-6 rounded-2xl shadow-2xl border-t-8 border-red-900">
+                <h2 class="text-2xl font-bold text-red-900 mb-6 text-center">أرشيف الاستئذانات</h2>
+                <div class="flex flex-col md:flex-row gap-3 mb-8">
+                    <input type="text" id="check-emp-id" placeholder="أدخل رقمك الوظيفي للبحث..." class="flex-1 p-3 border-2 border-gray-200 rounded-xl outline-none focus:border-yellow-500">
+                    <button onclick="loadEmployeeHistory()" class="bg-red-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 transition shadow-md">بحث في السجلات</button>
+                </div>
+                <div id="employee-results" class="overflow-x-auto">
+                    </div>
+            </div>
+        </section>
+
         <section id="admin-login" class="section-content hidden">
             <div class="max-w-md mx-auto glass p-10 rounded-2xl shadow-2xl mt-10 text-center border-b-8 border-yellow-500">
                 <h2 class="text-2xl font-bold text-red-900 mb-6">دخول الإدارة المدرسية</h2>
@@ -98,10 +118,21 @@
 
         <section id="admin-dashboard" class="section-content hidden">
             <div class="glass p-6 rounded-2xl shadow-2xl border-t-8 border-red-900">
-                <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 border-b pb-4">
                     <h2 class="text-xl font-bold text-red-900 underline decoration-yellow-500">سجل طلبات الاستئذان</h2>
-                    <button onclick="showSection('user-form')" class="text-red-600 font-bold border-2 border-red-600 px-4 py-1 rounded-full hover:bg-red-600 hover:text-white transition">خروج</button>
+                    
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <input type="text" id="admin-search" onkeyup="filterTable()" placeholder="بحث باسم الموظف..." class="p-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-yellow-500">
+                        <select id="status-filter" onchange="filterTable()" class="p-2 border-2 border-gray-200 rounded-lg text-sm outline-none focus:border-yellow-500">
+                            <option value="all">الكل</option>
+                            <option value="انتظار">انتظار</option>
+                            <option value="مقبول">مقبول</option>
+                            <option value="مرفوض">مرفوض</option>
+                        </select>
+                        <button onclick="showSection('user-form')" class="text-red-600 font-bold border-2 border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition">خروج</button>
+                    </div>
                 </div>
+
                 <div class="overflow-x-auto rounded-xl">
                     <table class="w-full text-right border-collapse">
                         <thead>
@@ -123,7 +154,9 @@
     <div id="approval-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center p-4 z-[100] backdrop-blur-sm overflow-y-auto">
         <div class="bg-white p-6 rounded-2xl max-w-2xl w-full shadow-2xl border-t-8 border-yellow-500 my-8">
             
-            <div id="pdf-content" class="p-4 bg-white text-right mb-4 border-2 border-gray-100 rounded-lg">
+            <div id="admin-alert"></div>
+
+            <div id="pdf-content" class="p-4 bg-white text-right mb-4 border-2 border-gray-100 rounded-lg relative">
                 <div class="text-center mb-6 border-b-2 border-red-900 pb-4">
                     <h2 class="text-2xl font-bold text-red-900 mb-1">مدرسة محمد بن سليمان الغافري</h2>
                     <h3 class="text-lg font-bold text-gray-700">استمارة استئذان موظف</h3>
@@ -161,7 +194,12 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby3KnfZVORxtgnaP1iCTpSRzoTytBtsVNFLyNgdOy2_3xNXKBneecJCP8G5jXKxHsPM/exec";
         let currentRequestId = null;
-        let globalRequests = []; // مصفوفة لتخزين كل البيانات لسهولة الاستدعاء
+        let globalRequests = []; 
+
+        // تسجيل أداة PWA برمجياً لتمكين التثبيت على الجوال
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => console.log('PWA Ready'));
+        }
 
         function formatTimeClean(timeStr) {
             if (!timeStr) return "--:--";
@@ -220,7 +258,7 @@
 
             if(!data.empName || !data.empId) return alert('يرجى تعبئة البيانات الأساسية');
             btn.disabled = true;
-            btn.innerText = "جاري الحفظ في السحابة... ";
+            btn.innerText = "جاري الحفظ في السحابة... ⏳";
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
@@ -236,36 +274,121 @@
             try {
                 const response = await fetch(SCRIPT_URL);
                 const data = await response.json();
-                
-                // تخزين البيانات عالمياً للاستفادة منها في النافذة المنبثقة
                 globalRequests = data.reverse(); 
-                
-                tbody.innerHTML = '';
-                globalRequests.forEach(r => {
-                    const statusText = r[6] === 'approved' ? 'مقبول' : (r[6] === 'rejected' ? 'مرفوض' : 'انتظار');
-                    const statusColor = r[6] === 'approved' ? 'text-green-600' : (r[6] === 'rejected' ? 'text-red-600' : 'text-orange-500');
-                    const timeFrom = formatTimeClean(r[10]);
-                    const timeTo = formatTimeClean(r[11]);
-                    const timing = (r[11] && r[11] !== "") ? `${timeFrom} - ${timeTo}` : timeFrom;
+                filterTable(); // استدعاء دالة الفلترة لرسم الجدول مبدئياً
+            } catch (e) { tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">فشل التحميل، يرجى تحديث الصفحة.</td></tr>'; }
+        }
 
-                    tbody.innerHTML += `
-                        <tr class="border-b hover:bg-red-50 transition text-sm">
-                            <td class="p-4 font-bold text-red-900">${r[2] || '---'}</td>
-                            <td class="p-4 text-gray-600 truncate max-w-[150px] hide-on-mobile">${r[5] || "لم يذكر سبب"}</td>
-                            <td class="p-4 text-center font-bold text-blue-800">${timing}</td>
-                            <td class="p-4 text-center font-extrabold ${statusColor}">${statusText}</td>
-                            <td class="p-4 text-center">
-                                <button onclick="openApprovalModal('${r[0]}')" class="bg-red-800 text-white px-4 py-1 rounded-full text-xs shadow-md hover:bg-red-700">التفاصيل</button>
-                            </td>
+        // دالة البحث والفلترة للمدير (فكرة 4)
+        function filterTable() {
+            const searchTerm = document.getElementById('admin-search').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+            const tbody = document.getElementById('requests-table-body');
+            
+            tbody.innerHTML = '';
+            
+            const filteredData = globalRequests.filter(r => {
+                const nameMatch = (r[2] || '').toLowerCase().includes(searchTerm);
+                const statusText = r[6] === 'approved' ? 'مقبول' : (r[6] === 'rejected' ? 'مرفوض' : 'انتظار');
+                const statusMatch = statusFilter === 'all' || statusText === statusFilter;
+                return nameMatch && statusMatch;
+            });
+
+            if(filteredData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-500">لا توجد نتائج مطابقة</td></tr>';
+                return;
+            }
+
+            filteredData.forEach(r => {
+                const statusText = r[6] === 'approved' ? 'مقبول' : (r[6] === 'rejected' ? 'مرفوض' : 'انتظار');
+                const statusColor = r[6] === 'approved' ? 'text-green-600' : (r[6] === 'rejected' ? 'text-red-600' : 'text-orange-500');
+                const timeFrom = formatTimeClean(r[10]);
+                const timeTo = formatTimeClean(r[11]);
+                const timing = (r[11] && r[11] !== "") ? `${timeFrom} - ${timeTo}` : timeFrom;
+
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-red-50 transition text-sm">
+                        <td class="p-4 font-bold text-red-900">${r[2] || '---'}</td>
+                        <td class="p-4 text-gray-600 truncate max-w-[150px] hide-on-mobile">${r[5] || "لم يذكر سبب"}</td>
+                        <td class="p-4 text-center font-bold text-blue-800">${timing}</td>
+                        <td class="p-4 text-center font-extrabold ${statusColor}">${statusText}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="openApprovalModal('${r[0]}')" class="bg-red-800 text-white px-4 py-1 rounded-full text-xs shadow-md hover:bg-red-700">التفاصيل</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // دالة بحث الموظف في أرشيفه الشخصي (فكرة 3)
+        async function loadEmployeeHistory() {
+            const empId = document.getElementById('check-emp-id').value.trim();
+            const resultsDiv = document.getElementById('employee-results');
+            if(!empId) return alert("يرجى إدخال الرقم الوظيفي");
+
+            resultsDiv.innerHTML = '<p class="text-center font-bold text-red-900 animate-pulse mt-4">جاري البحث في السجلات... ⏳</p>';
+            
+            try {
+                // جلب البيانات في حال لم يقم المدير بتسجيل الدخول ولم تكن البيانات مخزنة مسبقاً
+                let searchData = globalRequests;
+                if(searchData.length === 0) {
+                    const response = await fetch(SCRIPT_URL);
+                    const data = await response.json();
+                    searchData = data.reverse();
+                }
+
+                const myRequests = searchData.filter(r => String(r[1]) === empId);
+
+                if(myRequests.length === 0) {
+                    resultsDiv.innerHTML = '<div class="bg-red-50 border border-red-200 p-4 rounded-xl text-center text-red-700 font-bold mt-4">لا توجد أي طلبات استئذان مسجلة لهذا الرقم الوظيفي.</div>';
+                    return;
+                }
+
+                let html = `
+                    <div class="mt-6 bg-white border rounded-xl overflow-hidden shadow-sm">
+                        <table class="w-full text-sm text-right border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 text-red-900 border-b">
+                                    <th class="p-3">التاريخ</th>
+                                    <th class="p-3">النوع</th>
+                                    <th class="p-3">الحالة</th>
+                                    <th class="p-3 hide-on-mobile">ملاحظات الإدارة</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                
+                myRequests.forEach(r => {
+                    const statusText = r[6] === 'approved' ? '✅ مقبول' : (r[6] === 'rejected' ? '❌ مرفوض' : '⏳ انتظار');
+                    html += `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-3 font-bold">${formatDateClean(r[3])}</td>
+                            <td class="p-3 text-gray-600">${r[4]}</td>
+                            <td class="p-3 font-bold">${statusText}</td>
+                            <td class="p-3 text-gray-500 hide-on-mobile">${r[7] || '--'}</td>
                         </tr>`;
                 });
-            } catch (e) { tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center">فشل التحميل، يرجى تحديث الصفحة.</td></tr>'; }
+                html += `</tbody></table></div>`;
+                resultsDiv.innerHTML = html;
+            } catch (e) { resultsDiv.innerHTML = '<p class="text-center text-red-500 mt-4">خطأ في الاتصال بالخادم.</p>'; }
+        }
+
+        // دالة حساب رصيد الاستئذان الشهري (فكرة 5)
+        function calculateMonthlyBalance(empId) {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            const monthlyRequests = globalRequests.filter(r => {
+                if(!r[3]) return false;
+                const reqDate = new Date(r[3]);
+                return String(r[1]) === String(empId) && 
+                       r[6] === 'approved' && 
+                       reqDate.getMonth() === currentMonth && 
+                       reqDate.getFullYear() === currentYear;
+            });
+            return monthlyRequests.length;
         }
 
         function openApprovalModal(id) {
             currentRequestId = id;
-            
-            // جلب تفاصيل الطلب من المصفوفة المخزنة
             const req = globalRequests.find(r => r[0] === id);
             if (!req) return;
 
@@ -273,7 +396,16 @@
             const timeTo = formatTimeClean(req[11]);
             const timingText = (req[11] && req[11] !== "") ? `من ${timeFrom} إلى ${timeTo}` : timeFrom;
 
-            // تنسيق البيانات لتظهر كملف احترافي
+            // حقن تنبيه الرصيد للمدير
+            const balance = calculateMonthlyBalance(req[1]);
+            let alertClass = balance >= 3 ? 'bg-red-100 text-red-800 border-red-300' : 'bg-green-50 text-green-800 border-green-200';
+            document.getElementById('admin-alert').innerHTML = `
+                <div class="p-3 mb-4 rounded-lg border font-bold text-sm flex items-center gap-2 shadow-sm ${alertClass}">
+                    <span>📊</span> رصيد الشهر الحالي: استأذن هذا الموظف (${balance}) مرات معتمدة حتى الآن.
+                </div>
+            `;
+
+            // تنسيق البيانات للـ PDF
             document.getElementById('modal-details').innerHTML = `
                 <div class="col-span-2 md:col-span-1 bg-red-50 p-3 rounded border border-red-100"><span class="text-gray-500 block text-xs mb-1">الاسم:</span> <strong class="text-base text-red-900">${req[2] || '---'}</strong></div>
                 <div class="col-span-2 md:col-span-1 bg-red-50 p-3 rounded border border-red-100"><span class="text-gray-500 block text-xs mb-1">الرقم الوظيفي:</span> <strong class="text-base text-gray-800">${req[1] || '---'}</strong></div>
@@ -290,16 +422,12 @@
                 <div class="col-span-2 text-left text-xs text-gray-400 mt-2">رقم الطلب المرجعي: ${req[0]} | وقت التقديم: ${req[12] || '---'}</div>
             `;
             
-            // تفريغ حقل الملاحظات السابق
             document.getElementById('admin-comment').value = req[7] || '';
             document.getElementById('approval-modal').classList.remove('hidden');
         }
 
-        // دالة تحويل الجزء المحدد إلى PDF
         function downloadPDF() {
             const element = document.getElementById('pdf-content');
-            
-            // إعدادات الـ PDF
             const opt = {
                 margin:       10,
                 filename:     `استئذان_${currentRequestId}.pdf`,
@@ -307,8 +435,6 @@
                 html2canvas:  { scale: 2, useCORS: true },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-
-            // إنشاء وتحميل الملف
             html2pdf().set(opt).from(element).save();
         }
 
@@ -319,7 +445,6 @@
             const btnApprove = document.querySelector('button[onclick="updateStatus(\'approved\')"]');
             const btnReject = document.querySelector('button[onclick="updateStatus(\'rejected\')"]');
             
-            // تعطيل الأزرار أثناء الإرسال
             btnApprove.disabled = true; btnReject.disabled = true;
 
             const data = { action: "update", id: currentRequestId, status: status, comment: comment };
@@ -327,7 +452,7 @@
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
                 alert('تم تحديث القرار بنجاح ✅');
                 closeModal();
-                loadRequests(); // تحديث الجدول بعد القرار
+                loadRequests(); 
             } catch (e) {
                 alert('حدث خطأ أثناء حفظ القرار.');
             } finally {
@@ -335,7 +460,6 @@
             }
         }
 
-        // تهيئة البيانات عند فتح الصفحة
         document.getElementById('perm-id').innerText = 'PERM-' + Math.floor(1000 + Math.random() * 9000);
         document.getElementById('req-date').valueAsDate = new Date();
     </script>
