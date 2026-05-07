@@ -492,49 +492,81 @@
             document.getElementById('approval-modal').classList.remove('hidden');
         }
 
-       function downloadPDF() {
-            // 1. تحديد العنصر الأصلي
-            const originalElement = document.getElementById('pdf-content');
-            
-            // 2. إنشاء نسخة (Clone) من العنصر لعزلها عن تأثير شاشة الجوال
-            const clonedElement = originalElement.cloneNode(true);
-            
-            // 3. إعطاء النسخة أبعاد ورقة A4 الثابتة وإخفاؤها خلف الموقع
-            clonedElement.style.position = 'absolute';
-            clonedElement.style.top = '0';
-            clonedElement.style.right = '0';
-            clonedElement.style.width = '800px'; // عرض مثالي للورقة
-            clonedElement.style.backgroundColor = '#ffffff';
-            clonedElement.style.zIndex = '-1000'; // خلف الشاشة
-            clonedElement.dir = 'rtl'; // إجبار الاتجاه العربي
-            
-            // إضافة النسخة لجسم الصفحة ليتمكن النظام من قراءتها بحرية
-            document.body.appendChild(clonedElement);
+       async function downloadPDF() {
+            const btn = event.currentTarget || document.querySelector('button[onclick="downloadPDF()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ جاري التصدير...';
+            btn.disabled = true;
 
-            // 4. إعدادات الـ PDF
+            const pdfContent = document.getElementById('pdf-content');
+            const originalParent = pdfContent.parentNode;
+            const originalNextSibling = pdfContent.nextSibling;
+
+            // 1. إخفاء جميع محتويات الموقع لتفريغ الشاشة للملف فقط
+            const bodyChildren = Array.from(document.body.children);
+            bodyChildren.forEach(child => {
+                if(child.tagName !== 'SCRIPT' && child !== pdfContent) {
+                    // حفظ حالة العرض الأصلية لاسترجاعها لاحقاً
+                    child.setAttribute('data-hidden-by-pdf', child.style.display || '');
+                    child.style.display = 'none';
+                }
+            });
+
+            // 2. نقل الاستمارة لتكون حرة في الصفحة (خارج النافذة المنبثقة)
+            document.body.appendChild(pdfContent);
+            
+            // 3. تثبيت العرض ليتطابق مع ورقة A4
+            const originalWidth = pdfContent.style.width;
+            const originalMargin = pdfContent.style.margin;
+            pdfContent.style.width = '800px';
+            pdfContent.style.margin = '0 auto';
+            
+            window.scrollTo(0, 0); // الصعود لأعلى الصفحة إجبارياً
+
+            // 4. إعدادات الطباعة الصارمة
             const opt = {
                 margin:       10,
                 filename:     `استئذان_${currentRequestId}.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { 
-                    scale: 2, 
-                    useCORS: true
+                html2canvas:  {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0,
+                    scrollX: 0,
+                    windowWidth: 800
                 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // تغيير نص الزر أثناء التحميل لمنع الضغط المزدوج
-            const btn = event.currentTarget || document.querySelector('button[onclick="downloadPDF()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ جاري إنشاء الملف...';
-            btn.disabled = true;
+            try {
+                // 5. استخراج الملف
+                await html2pdf().set(opt).from(pdfContent).save();
+            } catch (e) {
+                console.error("PDF Error:", e);
+                alert("حدث خطأ أثناء معالجة الملف.");
+            } finally {
+                // 6. إعادة كل شيء إلى طبيعته (التنظيف)
+                pdfContent.style.width = originalWidth;
+                pdfContent.style.margin = originalMargin;
+                
+                // إعادة الاستمارة داخل النافذة المنبثقة
+                if (originalNextSibling) {
+                    originalParent.insertBefore(pdfContent, originalNextSibling);
+                } else {
+                    originalParent.appendChild(pdfContent);
+                }
 
-            // 5. طباعة النسخة المضبوطة ثم حذفها لتنظيف الموقع
-            html2pdf().set(opt).from(clonedElement).save().then(() => {
+                // إظهار الموقع من جديد
+                bodyChildren.forEach(child => {
+                    if(child.hasAttribute('data-hidden-by-pdf')) {
+                        child.style.display = child.getAttribute('data-hidden-by-pdf');
+                        child.removeAttribute('data-hidden-by-pdf');
+                    }
+                });
+
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                document.body.removeChild(clonedElement); // حذف النسخة
-            });
+            }
         }
         function closeModal() { document.getElementById('approval-modal').classList.add('hidden'); }
 
