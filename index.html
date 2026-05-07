@@ -492,17 +492,35 @@
             document.getElementById('approval-modal').classList.remove('hidden');
         }
 
-        function downloadPDF() {
+       function downloadPDF() {
             const element = document.getElementById('pdf-content');
+            
+            // إعدادات متقدمة لحل مشكلة القص والصفحات الفارغة
             const opt = {
-                margin:       10,
+                margin:       [15, 15, 15, 15], // هوامش متساوية ومريحة للعين
                 filename:     `استئذان_${currentRequestId}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true,
+                    scrollY: 0,        // [الحل السحري] يمنع قص الجزء العلوي مهما حركت شريط التمرير
+                    scrollX: 0,
+                    windowWidth: 900   // يجبر النظام على عرض سطح مكتب لضمان عدم تداخل النصوص في الجوال
+                },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(element).save();
+
+            // إظهار للمستخدم أن النظام يعمل لتجنب الضغط المتكرر
+            const btn = event.currentTarget || document.querySelector('button[onclick="downloadPDF()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ جاري التجهيز...';
+            btn.disabled = true;
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // إعادة الزر لشكله الطبيعي بعد انتهاء التحميل
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
         }
 
         function closeModal() { document.getElementById('approval-modal').classList.add('hidden'); }
