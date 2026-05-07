@@ -493,36 +493,49 @@
         }
 
        function downloadPDF() {
-            const element = document.getElementById('pdf-content');
+            // 1. تحديد العنصر الأصلي
+            const originalElement = document.getElementById('pdf-content');
             
-            // إعدادات متقدمة لحل مشكلة القص والصفحات الفارغة
+            // 2. إنشاء نسخة (Clone) من العنصر لعزلها عن تأثير شاشة الجوال
+            const clonedElement = originalElement.cloneNode(true);
+            
+            // 3. إعطاء النسخة أبعاد ورقة A4 الثابتة وإخفاؤها خلف الموقع
+            clonedElement.style.position = 'absolute';
+            clonedElement.style.top = '0';
+            clonedElement.style.right = '0';
+            clonedElement.style.width = '800px'; // عرض مثالي للورقة
+            clonedElement.style.backgroundColor = '#ffffff';
+            clonedElement.style.zIndex = '-1000'; // خلف الشاشة
+            clonedElement.dir = 'rtl'; // إجبار الاتجاه العربي
+            
+            // إضافة النسخة لجسم الصفحة ليتمكن النظام من قراءتها بحرية
+            document.body.appendChild(clonedElement);
+
+            // 4. إعدادات الـ PDF
             const opt = {
-                margin:       [15, 15, 15, 15], // هوامش متساوية ومريحة للعين
+                margin:       10,
                 filename:     `استئذان_${currentRequestId}.pdf`,
                 image:        { type: 'jpeg', quality: 1 },
                 html2canvas:  { 
                     scale: 2, 
-                    useCORS: true,
-                    scrollY: 0,        // [الحل السحري] يمنع قص الجزء العلوي مهما حركت شريط التمرير
-                    scrollX: 0,
-                    windowWidth: 900   // يجبر النظام على عرض سطح مكتب لضمان عدم تداخل النصوص في الجوال
+                    useCORS: true
                 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // إظهار للمستخدم أن النظام يعمل لتجنب الضغط المتكرر
+            // تغيير نص الزر أثناء التحميل لمنع الضغط المزدوج
             const btn = event.currentTarget || document.querySelector('button[onclick="downloadPDF()"]');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ جاري التجهيز...';
+            btn.innerHTML = '⏳ جاري إنشاء الملف...';
             btn.disabled = true;
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                // إعادة الزر لشكله الطبيعي بعد انتهاء التحميل
+            // 5. طباعة النسخة المضبوطة ثم حذفها لتنظيف الموقع
+            html2pdf().set(opt).from(clonedElement).save().then(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
+                document.body.removeChild(clonedElement); // حذف النسخة
             });
         }
-
         function closeModal() { document.getElementById('approval-modal').classList.add('hidden'); }
 
         async function updateStatus(status) {
