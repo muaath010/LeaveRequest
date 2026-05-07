@@ -495,35 +495,23 @@
        async function downloadPDF() {
             const btn = event.currentTarget || document.querySelector('button[onclick="downloadPDF()"]');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ جاري التصدير...';
+            btn.innerHTML = '⏳ جاري المعالجة...';
             btn.disabled = true;
 
             const pdfContent = document.getElementById('pdf-content');
-            const originalParent = pdfContent.parentNode;
-            const originalNextSibling = pdfContent.nextSibling;
+            const modal = document.getElementById('approval-modal');
 
-            // 1. إخفاء جميع محتويات الموقع لتفريغ الشاشة للملف فقط
-            const bodyChildren = Array.from(document.body.children);
-            bodyChildren.forEach(child => {
-                if(child.tagName !== 'SCRIPT' && child !== pdfContent) {
-                    // حفظ حالة العرض الأصلية لاسترجاعها لاحقاً
-                    child.setAttribute('data-hidden-by-pdf', child.style.display || '');
-                    child.style.display = 'none';
-                }
-            });
-
-            // 2. نقل الاستمارة لتكون حرة في الصفحة (خارج النافذة المنبثقة)
-            document.body.appendChild(pdfContent);
+            // 1. الحل الجذري: إيقاف خصائص النافذة المنبثقة مؤقتاً لتتمكن المكتبة من الرؤية
+            // نقوم بإزالة خصائص التثبيت والتمرير التي تسبب القص والصفحة البيضاء
+            modal.classList.remove('fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'overflow-y-auto');
+            modal.classList.add('absolute', 'top-0', 'left-0', 'w-full');
             
-            // 3. تثبيت العرض ليتطابق مع ورقة A4
-            const originalWidth = pdfContent.style.width;
-            const originalMargin = pdfContent.style.margin;
-            pdfContent.style.width = '800px';
-            pdfContent.style.margin = '0 auto';
-            
-            window.scrollTo(0, 0); // الصعود لأعلى الصفحة إجبارياً
+            // 2. إجبار الشاشة على الصعود للأعلى تماماً للالتقاط من نقطة الصفر
+            window.scrollTo(0, 0);
 
-            // 4. إعدادات الطباعة الصارمة
+            // 3. إعطاء المتصفح 300 جزء من الثانية ليتعّرف على التغيير قبل التصوير
+            await new Promise(r => setTimeout(r, 300));
+
             const opt = {
                 margin:       10,
                 filename:     `استئذان_${currentRequestId}.pdf`,
@@ -532,38 +520,21 @@
                     scale: 2,
                     useCORS: true,
                     scrollY: 0,
-                    scrollX: 0,
-                    windowWidth: 800
+                    scrollX: 0
                 },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
-                // 5. استخراج الملف
+                // 4. استخراج الملف
                 await html2pdf().set(opt).from(pdfContent).save();
             } catch (e) {
-                console.error("PDF Error:", e);
-                alert("حدث خطأ أثناء معالجة الملف.");
+                alert('حدث خطأ أثناء تصدير الملف.');
             } finally {
-                // 6. إعادة كل شيء إلى طبيعته (التنظيف)
-                pdfContent.style.width = originalWidth;
-                pdfContent.style.margin = originalMargin;
+                // 5. إعادة النافذة المنبثقة إلى طبيعتها فوراً بعد التصدير
+                modal.classList.add('fixed', 'inset-0', 'flex', 'items-center', 'justify-center', 'overflow-y-auto');
+                modal.classList.remove('absolute', 'top-0', 'left-0', 'w-full');
                 
-                // إعادة الاستمارة داخل النافذة المنبثقة
-                if (originalNextSibling) {
-                    originalParent.insertBefore(pdfContent, originalNextSibling);
-                } else {
-                    originalParent.appendChild(pdfContent);
-                }
-
-                // إظهار الموقع من جديد
-                bodyChildren.forEach(child => {
-                    if(child.hasAttribute('data-hidden-by-pdf')) {
-                        child.style.display = child.getAttribute('data-hidden-by-pdf');
-                        child.removeAttribute('data-hidden-by-pdf');
-                    }
-                });
-
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
