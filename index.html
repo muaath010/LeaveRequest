@@ -31,22 +31,46 @@
 <body class="text-gray-800">
 
     <nav class="bg-red-900 text-white p-4 shadow-xl border-b-4 border-yellow-500 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
+        <div class="container mx-auto flex justify-between items-center relative">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="showSection('intro-screen')">
                 <img src="https://i.ibb.co/pD8X3mw/logo.jpg" alt="Logo" class="w-12 h-12 rounded-full logo-pulse object-cover">
                 <h1 class="text-lg md:text-xl font-bold hide-on-mobile">مدرسة محمد بن سليمان الغافري</h1>
             </div>
-            <div class="flex gap-2">
-                <button onclick="showSection('user-form')" class="px-3 py-1 hover:bg-red-800 rounded-lg text-sm transition">تقديم طلب</button>
-                <button onclick="showSection('employee-check')" class="px-3 py-1 bg-white text-red-900 font-bold hover:bg-gray-200 rounded-lg text-sm shadow-md transition">طلباتي</button>
-                <button onclick="showAdminLogin()" class="px-3 py-1 bg-yellow-500 text-red-900 font-bold hover:bg-yellow-400 rounded-lg text-sm shadow-md transition">المدير</button>
+            
+            <!-- زر القائمة الجانبية (Hamburger Icon) -->
+            <button onclick="toggleMenu()" class="text-white hover:text-yellow-400 focus:outline-none transition">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+
+            <!-- القائمة المنسدلة للأزرار -->
+            <div id="mobile-menu" class="hidden absolute top-14 left-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border-2 border-red-900 overflow-hidden z-50">
+                <button onclick="showSection('user-form'); toggleMenu();" class="w-full text-right px-4 py-3 text-red-900 font-bold hover:bg-red-50 border-b border-gray-100 transition">تقديم طلب جديد</button>
+                <button onclick="showSection('employee-check'); toggleMenu();" class="w-full text-right px-4 py-3 text-red-900 font-bold hover:bg-red-50 border-b border-gray-100 transition">سجل طلباتي</button>
+                <button onclick="showAdminLogin(); toggleMenu();" class="w-full text-right px-4 py-3 text-yellow-600 font-bold hover:bg-red-50 bg-gray-50 transition">دخول المدير</button>
             </div>
         </div>
     </nav>
 
     <div class="container mx-auto mt-6 px-4 pb-12">
         
-        <section id="user-form" class="section-content">
+        <!-- الواجهة التعريفية الجديدة (الرئيسية) -->
+        <section id="intro-screen" class="section-content">
+            <div class="max-w-2xl mx-auto glass p-10 rounded-2xl shadow-2xl mt-10 md:mt-20 text-center border-t-8 border-yellow-500 flex flex-col items-center">
+                <img src="https://i.ibb.co/pD8X3mw/logo.jpg" alt="Logo" class="w-32 h-32 md:w-40 md:h-40 rounded-full logo-pulse object-cover mb-6">
+                
+                <h2 class="text-3xl md:text-4xl font-extrabold text-red-900 mb-2">نظام الاستئذان الإلكتروني</h2>
+                <p class="text-sm md:text-base text-gray-500 font-medium mb-10">إعداد: أ.معاذ اليعقوبي - تقنية المعلومات</p>
+                
+                <button onclick="showSection('user-form')" class="red-gradient text-white px-12 py-4 rounded-full font-bold text-xl shadow-xl hover:scale-105 active:scale-95 transition-all w-full md:w-auto">
+                    تسجيل استئذان ✍️
+                </button>
+            </div>
+        </section>
+
+        <!-- جعلنا قسم تقديم الطلب مخفياً كبداية ليستعرض المستخدم الواجهة التعريفية أولاً -->
+        <section id="user-form" class="section-content hidden">
             <div class="max-w-3xl mx-auto glass p-6 md:p-10 rounded-2xl shadow-2xl border-t-8 border-red-900">
                 <div class="text-center mb-6">
                     <h2 class="text-2xl md:text-3xl font-bold text-red-900">إستئذان إلكتروني</h2>
@@ -263,6 +287,13 @@
             return canvas.toDataURL('image/png');
         }
         /* -------------------------- */
+
+        /* ----- الدالة الجديدة لإظهار/إخفاء القائمة الجانبية ----- */
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+        /* ------------------------------------------------------ */
 
         function formatTimeClean(timeStr) {
             if (!timeStr) return "--:--";
