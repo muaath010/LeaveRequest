@@ -48,7 +48,7 @@
             <div id="mobile-menu" class="hidden absolute top-14 left-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border-2 border-red-900 overflow-hidden z-50">
                 <button onclick="showSection('user-form'); toggleMenu();" class="w-full text-right px-4 py-3 text-red-900 font-bold hover:bg-red-50 border-b border-gray-100 transition">تقديم طلب جديد</button>
                 <button onclick="showSection('employee-check'); toggleMenu();" class="w-full text-right px-4 py-3 text-red-900 font-bold hover:bg-red-50 border-b border-gray-100 transition">سجل طلباتي</button>
-                <button onclick="showAdminLogin(); toggleMenu();" class="w-full text-right px-4 py-3 text-yellow-600 font-bold hover:bg-red-50 bg-gray-50 transition">دخول المدير</button>
+                <button onclick="showAdminLogin(); toggleMenu();" class="w-full text-right px-4 py-3 text-yellow-600 font-bold hover:bg-red-50 bg-gray-50 transition">الإدارة</button>
             </div>
         </div>
     </nav>
@@ -69,7 +69,7 @@
             </div>
         </section>
 
-        <!-- جعلنا قسم تقديم الطلب مخفياً كبداية ليستعرض المستخدم الواجهة التعريفية أولاً -->
+        <!-- قسم تقديم الطلب -->
         <section id="user-form" class="section-content hidden">
             <div class="max-w-3xl mx-auto glass p-6 md:p-10 rounded-2xl shadow-2xl border-t-8 border-red-900">
                 <div class="text-center mb-6">
@@ -143,7 +143,7 @@
 
         <section id="admin-login" class="section-content hidden">
             <div class="max-w-md mx-auto glass p-10 rounded-2xl shadow-2xl mt-10 text-center border-b-8 border-yellow-500">
-                <h2 class="text-2xl font-bold text-red-900 mb-6">دخول الإدارة المدرسية</h2>
+                <h2 class="text-2xl font-bold text-red-900 mb-6">الإدارة المدرسية</h2>
                 <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full p-3 border-2 rounded-lg mb-4 text-center text-xl outline-none focus:border-yellow-500">
                 <button onclick="loginAdmin()" class="w-full red-gradient text-white py-3 rounded-lg font-bold">دخول النظام</button>
             </div>
@@ -161,7 +161,7 @@
                             <option value="مقبول">مقبول</option>
                             <option value="مرفوض">مرفوض</option>
                         </select>
-                        <button onclick="showSection('user-form')" class="text-red-600 font-bold border-2 border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition">خروج</button>
+                        <button onclick="logoutAdmin()" class="text-red-600 font-bold border-2 border-red-600 px-4 py-1.5 rounded-lg hover:bg-red-600 hover:text-white transition">خروج</button>
                     </div>
                 </div>
 
@@ -231,9 +231,29 @@
         let currentRequestId = null;
         let globalRequests = []; 
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => console.log('PWA Ready'));
-        }
+        /* ----- استرجاع الحالة عند التحديث (الذاكرة المؤقتة) ----- */
+        window.addEventListener('load', () => {
+            if ('serviceWorker' in navigator) {
+                console.log('PWA Ready');
+            }
+            
+            // قراءة الذاكرة لمعرفة أين كان المستخدم
+            const savedSection = sessionStorage.getItem('activeSection') || 'intro-screen';
+            const isAdminLoggedIn = sessionStorage.getItem('isAdminLoggedIn') === 'true';
+
+            // إذا كان في لوحة المدير، نتحقق هل ما زال مسجلاً للدخول؟
+            if (savedSection === 'admin-dashboard') {
+                if (isAdminLoggedIn) {
+                    showSection('admin-dashboard');
+                    loadRequests();
+                } else {
+                    showSection('admin-login');
+                }
+            } else {
+                showSection(savedSection);
+            }
+        });
+        /* ------------------------------------------------------ */
 
         /* ----- كود لوحة التوقيع مع اختيار اللون ----- */
         const canvas = document.getElementById('sig-canvas');
@@ -311,6 +331,10 @@
         function showSection(id) {
             document.querySelectorAll('.section-content').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
+            
+            // حفظ الصفحة الحالية في الذاكرة لتفادي العودة للبداية عند التحديث
+            sessionStorage.setItem('activeSection', id);
+            
             if(id === 'user-form') setTimeout(resizeCanvas, 100);
         }
 
@@ -318,9 +342,16 @@
 
         function loginAdmin() {
             if(document.getElementById('admin-pass').value === 'oman26') {
+                sessionStorage.setItem('isAdminLoggedIn', 'true'); // حفظ حالة الدخول
                 showSection('admin-dashboard');
                 loadRequests();
             } else { alert('كلمة المرور غير صحيحة!'); }
+        }
+
+        // دالة الخروج للمدير
+        function logoutAdmin() {
+            sessionStorage.removeItem('isAdminLoggedIn');
+            showSection('intro-screen');
         }
 
         function toggleTimeFields() {
@@ -354,12 +385,12 @@
 
             if(!data.empName || !data.empId) return alert('يرجى تعبئة البيانات الأساسية');
             btn.disabled = true;
-            btn.innerText = "يتم التسجيل الآن... ⏳";
+            btn.innerText = "يتم الآن الحفظ... ⏳";
 
             try {
                 await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
                 alert('تم إرسال الطلب بنجاح ✅');
-                location.reload();
+                location.reload(); // سيقوم هذا بتحديث الصفحة لكنه سيعيدك لنفس النموذج بسبب sessionStorage
             } catch (e) { alert('خطأ في الشبكة'); btn.disabled = false; }
         }
 
